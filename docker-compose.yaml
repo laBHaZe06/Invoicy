@@ -1,0 +1,55 @@
+version: '3.9'
+
+services: 
+  db:
+    image: mysql:8.0
+    container_name: billfree_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: billfree_db
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: billfree_phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+    depends_on:
+      - db
+
+  backend:
+    build:
+      context: ./backend
+    container_name: billfree_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/var/www/backend
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: mysql://root:root@db:3306/billfree_db
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: billfree_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    command: npm run dev
+    depends_on:
+      - backend
+
+
+volumes:
+  db_data:
