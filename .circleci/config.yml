@@ -34,7 +34,7 @@ jobs:
   test_backend:
     docker:
       - image: cimg/php:8.2-node  # Utiliser une image PHP avec Node
-    working_directory: ./backend  # On définit ici le répertoire de travail par défaut
+    working_directory: ~/backend  # On définit ici le répertoire de travail par défaut
     steps:
       - checkout
       - run:
@@ -54,7 +54,7 @@ jobs:
   test_frontend:
     docker:
       - image: cimg/node:20.17.0
-    working_directory: ./frontend  # On définit ici le répertoire de travail par défaut
+    working_directory: ~/frontend  # On définit ici le répertoire de travail par défaut
     steps:
       - checkout
       - run:
