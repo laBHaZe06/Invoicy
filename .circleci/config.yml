@@ -68,9 +68,9 @@ jobs:
           name: Build du backend Symfony
           command: |
             cd backend
-            symfony console doctrine:migration 
-            symfony console doctrine:migrations:migrate 
-            symfony console cache:clear
+            php bin/console cache:clear
+            php bin/console doctrine:migration
+            php bin/console doctrine:migrations:migrate 
 
   #Job pour construire le frontend Next.js
   build_frontend:
