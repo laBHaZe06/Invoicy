@@ -1,15 +1,18 @@
-import React from 'react';
+
 import { render, screen } from '@testing-library/react'
-import {describe, expect, test} from '@jest/globals';
+import {describe, expect} from '@jest/globals';
 
 import HomePage from '../src/app/home/page';
 
 
-describe('Page', () => {
-  test('renders the home page', () => {
+describe("Home", () => {
+  it("renders a heading", () => {
     render(<HomePage />);
-    const homeHeading =  screen.getByRole('heading', { level: 1 })
-    expect(homeHeading).toBeDefined();
-  });
 
+    const heading = screen.getByRole("heading", {
+      name: /welcome to next\.js!/i,
+    });
+
+    expect(heading).toBeDefined();
+  });
 });
