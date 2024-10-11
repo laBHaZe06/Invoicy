@@ -10,7 +10,8 @@ jobs:
       - checkout
       - run:
           name: Installer les dépendances Composer
-          command: composer install
+          command: |
+            composer install
       - run:
           name: Build du backend Symfony
           command: |
@@ -43,6 +44,7 @@ jobs:
       - run:
           name: Installer les dépendances Composer
           command: |
+            cd backend
             composer install
       - run:
           name: Exécuter les tests PHPUnit
