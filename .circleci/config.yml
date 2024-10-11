@@ -56,7 +56,7 @@ jobs:
   #Job pour construire le backend Symfony
   build_backend:
     docker:
-      - image: circleci/php:8.2-node
+      - image: cimg/php:8.2-node
     steps:
       - checkout
       - run:
@@ -74,7 +74,7 @@ jobs:
   #Job pour construire le frontend Next.js
   build_frontend:
     docker:
-      - image: circleci/node:20.17.0
+      - image: cimg/node:20.17.0
     steps:
       - checkout
       - run:
