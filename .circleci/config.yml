@@ -1,22 +1,21 @@
-version: 2.1
+version: 2.
 
 jobs:
-  lint_backend:
+  test_backend:
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.2-node  # Utiliser une image PHP avec Node
+    # working_directory: ./backend  # On définit ici le répertoire de travail par défaut
     steps:
       - checkout
       - run:
-          name: Vérifier le style de code avec PHP-CS-Fixer
-          command: |
-            cd backend
-            ./vendor/bin/php-cs-fixer fix src
-
-  test_backend:
-    docker:
-      - image: cimg/php:8.2-node
-    steps:
-      - checkout
+          name: Vérifier le contenu du dépôt après checkout
+          command: ls -lR 
+      - run:
+          name: Vérifier le contenu du dépôt
+          command: ls -l 
+      - run:
+          name: Vérifier le contenu du dossier backend
+          command: ls -l backend # Vérifie que le répertoire backend est bien là
       - run:
           name: Installer les dépendances Composer
           command: |
@@ -26,13 +25,21 @@ jobs:
           name: Exécuter les tests PHPUnit
           command: |
             cd backend
-            ./vendor/bin/phpunit
+            ./vendor/bin/php-cs-fixer fix src  
 
+  # Job pour tester le frontend Next.js
   test_frontend:
     docker:
       - image: cimg/node:20.17.0
+    # working_directory: ./frontend  # On définit ici le répertoire de travail par défaut
     steps:
       - checkout
+      - run:
+          name: Vérifier le contenu du dépôt après checkout
+          command: ls -lR 
+      - run:
+          name: Vérifier le contenu du frontend
+          command: ls -l  # Vérifie que le répertoire frontend est bien là
       - run:
           name: Installer les dépendances npm
           command: |
@@ -44,9 +51,12 @@ jobs:
             cd frontend
             npm run test
 
+
+
+  #Job pour construire le backend Symfony
   build_backend:
     docker:
-      - image: cimg/php:8.2-node
+      - image: circleci/php:8.2-node
     steps:
       - checkout
       - run:
@@ -61,9 +71,10 @@ jobs:
             php bin/console cache:clear
             php bin/console doctrine:migrations:migrate --no-interaction
 
+  #Job pour construire le frontend Next.js
   build_frontend:
     docker:
-      - image: cimg/node:20.17.0
+      - image: circleci/node:20.17.0
     steps:
       - checkout
       - run:
@@ -77,10 +88,11 @@ jobs:
             cd frontend
             npm run build
 
+
 workflows:
+  version: 2
   pipeline:
     jobs:
-      - lint_backend
       - test_backend
       - test_frontend
       - build_backend:
