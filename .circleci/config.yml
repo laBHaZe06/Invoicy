@@ -69,7 +69,6 @@ jobs:
           command: |
             cd backend
             php bin/console cache:clear
-            php bin/console make:migration
             php bin/console doctrine:migrations:migrate 
 
   #Job pour construire le frontend Next.js
