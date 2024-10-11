@@ -4,7 +4,7 @@ jobs:
    # Job pour construire le backend Symfony
   build_backend:
     docker:
-      - image: circleci/php:8.2-apache
+      - image: circleci/php:8.2-node
     working_directory: ./backend
     steps:
       - checkout
@@ -32,7 +32,7 @@ jobs:
           command: npm run build
   test_backend:
     docker:
-      - image: cimg/php:8.2-apache  # Utiliser une image PHP avec Node
+      - image: cimg/php:8.2-node  # Utiliser une image PHP avec Node
     steps:
       - checkout
       - run:
@@ -44,7 +44,6 @@ jobs:
       - run:
           name: Installer les dépendances Composer
           command: |
-            cd backend
             composer install
       - run:
           name: Exécuter les tests PHPUnit
