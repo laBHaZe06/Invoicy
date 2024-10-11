@@ -32,7 +32,7 @@ jobs:
           command: npm run build
   test_backend:
     docker:
-      - image: cimg/php:8.1-node  # Utiliser une image PHP avec Node
+      - image: cimg/php:8.2-apache  # Utiliser une image PHP avec Node
     steps:
       - checkout
       - run:
