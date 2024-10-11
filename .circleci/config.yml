@@ -5,33 +5,30 @@ jobs:
   build_backend:
     docker:
       - image: circleci/php:8.1-cli-buster-node
+    working_directory: ~/backend
     steps:
       - checkout
       - run:
           name: Installer les dépendances Composer
           command: composer install
-          working_directory: ./backend
       - run:
           name: Build du backend Symfony
           command: |
             php bin/console cache:clear
             php bin/console doctrine:migrations:migrate --no-interaction
-          working_directory: ./backend
-
   # Job pour construire le frontend Next.js
   build_frontend:
     docker:
       - image: circleci/node:18
+    working_directory: ~/frontend
     steps:
       - checkout
       - run:
           name: Installer les dépendances Node.js
           command: npm install
-          working_directory: ./frontend
       - run:
           name: Build du frontend Next.js
           command: npm run build
-          working_directory: ./frontend
   test_backend:
     docker:
       - image: cimg/php:8.1-node  # Utiliser une image PHP avec Node
