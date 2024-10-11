@@ -5,9 +5,9 @@ jobs:
   build_backend:
     docker:
       - image: circleci/php:8.2-node
-    working_directory: /home/circleci/project/backend # On définit ici le répertoire de travail par défaut
+    working_directory: ./backend # On définit ici le répertoire de travail par défaut
     steps:
-      - checkout
+      
       - run:
           name: Installer les dépendances Composer
           command: composer install  # Inutile d'utiliser cd backend, on est déjà dans ce répertoire
@@ -21,9 +21,8 @@ jobs:
   build_frontend:
     docker:
       - image: circleci/node:20.17.0
-    working_directory: /home/circleci/project/frontend  # On définit ici le répertoire de travail par défaut
+    working_directory: ./frontend  # On définit ici le répertoire de travail par défaut
     steps:
-      - checkout
       - run:
           name: Installer les dépendances Node.js
           command: npm install
