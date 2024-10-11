@@ -42,7 +42,7 @@ jobs:
           command: ls -l 
       - run:
           name: Vérifier le contenu du dossier backend
-          command: ls -l  # Vérifie que le répertoire backend est bien là
+          command: ls -l  backend # Vérifie que le répertoire backend est bien là
       - run:
           name: Installer les dépendances Composer
           command: composer install  # On n'a pas besoin de cd backend
