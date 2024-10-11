@@ -53,10 +53,12 @@ jobs:
           name: Installer les dépendances Composer
           command: |
             cd backend
-            composer install  # On n'a pas besoin de cd backend
+            composer install 
       - run:
           name: Exécuter les tests PHPUnit
-          command: php vendor/bin/phpunit --debug  # Directement dans le répertoire backend
+          command: |
+            cd backend
+            php vendor/bin/phpunit --debug  
 
   # Job pour tester le frontend Next.js
   test_frontend:
@@ -73,10 +75,14 @@ jobs:
           command: ls -l  # Vérifie que le répertoire frontend est bien là
       - run:
           name: Installer les dépendances npm
-          command: npm install
+          command: |
+            cd frontend
+            npm install
       - run:
           name: Exécuter les tests Frontend
-          command: npm run test
+          command: |
+            cd frontend
+            npm run test
 
 workflows:
   version: 2
