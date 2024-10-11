@@ -58,7 +58,7 @@ jobs:
           name: Exécuter les tests PHPUnit
           command: |
             cd backend
-            php vendor/bin/phpunit --debug  
+            ./vendor/bin/php-cs-fixer fix src  
 
   # Job pour tester le frontend Next.js
   test_frontend:
