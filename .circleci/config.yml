@@ -40,6 +40,9 @@ jobs:
           name: Vérifier le contenu du dépôt
           command: ls -l 
       - run:
+          name: Vérifier le contenu du dépôt
+          command: ls -l home/circleci/project/
+      - run:
           name: Vérifier le contenu du dossier backend
           command: ls -l  backend # Vérifie que le répertoire backend est bien là
       - run:
