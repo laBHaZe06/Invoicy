@@ -8,5 +8,7 @@ import {expect} from '@jest/globals';
 
 it("renders homepage unchanged", () => {
   const { container } = render(<HomePage />);
+
   expect(container).toMatchSnapshot();
 });
+
