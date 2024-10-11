@@ -5,9 +5,12 @@ jobs:
   build_backend:
     docker:
       - image: circleci/php:8.2-node
-    working_directory: ~/backend # On définit ici le répertoire de travail par défaut
+    working_directory: ./backend # On définit ici le répertoire de travail par défaut
     steps:
-      
+      - checkout
+      - run:
+          name: Vérifier le contenu du dépôt après checkout
+          command: ls -lR 
       - run:
           name: Installer les dépendances Composer
           command: composer install  # Inutile d'utiliser cd backend, on est déjà dans ce répertoire
@@ -21,7 +24,7 @@ jobs:
   build_frontend:
     docker:
       - image: circleci/node:20.17.0
-    working_directory: ~/frontend  # On définit ici le répertoire de travail par défaut
+    working_directory: ./frontend  # On définit ici le répertoire de travail par défaut
     steps:
       - checkout
       - run:
@@ -34,15 +37,18 @@ jobs:
   test_backend:
     docker:
       - image: cimg/php:8.2-node  # Utiliser une image PHP avec Node
-    working_directory: ./backend  # On définit ici le répertoire de travail par défaut
+    working_directory: ~/project/backend  # On définit ici le répertoire de travail par défaut
     steps:
       - checkout
+      - run:
+          name: Vérifier le contenu du dépôt après checkout
+          command: ls -lR 
       - run:
           name: Vérifier le contenu du dépôt
           command: ls -l 
       - run:
           name: Vérifier le contenu du dossier backend
-          command: ls -l  backend # Vérifie que le répertoire backend est bien là
+          command: ls -l ~/project/backend # Vérifie que le répertoire backend est bien là
       - run:
           name: Installer les dépendances Composer
           command: composer install  # On n'a pas besoin de cd backend
@@ -57,6 +63,9 @@ jobs:
     working_directory: ./frontend  # On définit ici le répertoire de travail par défaut
     steps:
       - checkout
+      - run:
+          name: Vérifier le contenu du dépôt après checkout
+          command: ls -lR 
       - run:
           name: Vérifier le contenu du frontend
           command: ls -l  # Vérifie que le répertoire frontend est bien là
