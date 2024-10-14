@@ -18,23 +18,23 @@ const config: Config = {
   },
   // Add page test settings
   testMatch: ['<rootDir>/__tests__/**/*.+(ts|tsx)'],
-  // testPathIgnorePatterns: ['<rootDir>/node_modules/'],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.json',
     },
   },
-  moduleNameMapper: {
-    '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
-  },
+  // moduleNameMapper: {
+  //   '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
+  // },
   // Add any custom Jest setup steps you need
   // For example, you might want to mock modules like 'react-router-dom'
   // ...
   // If you're using Next.js' Link component, you can add it to the moduleNameMapper
-  // moduleNameMapper: {
-  //   '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
-  //   '^next/link$': '<rootDir>/node_modules/next/link',
-  // },
+  moduleNameMapper: {
+    '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
+    '^next/link$': '<rootDir>/node_modules/next/link',
+  },
   //...
   // If you're using Next in your app, you can add it to the moduleNameMapper module name mapper
   // moduleNameMapper: {
