@@ -1,6 +1,6 @@
-# BillFree - SaaS de Facturation pour Freelances
+# Invoicy - SaaS de Facturation pour Freelances
 
-BillFree est une solution de facturation en ligne simple et intuitive, conçue pour les freelances. Ce projet combine un backend Symfony avec une interface frontend réalisée avec Next.js. L'objectif de ce projet est de fournir aux freelances un outil performant pour générer et gérer leurs factures en toute simplicité.
+Invoicy est une solution de facturation en ligne simple et intuitive, conçue pour les freelances. Ce projet combine un backend Symfony avec une interface frontend réalisée avec Next.js. L'objectif de ce projet est de fournir aux freelances un outil performant pour générer et gérer leurs factures en toute simplicité.
 
 ---
 
@@ -46,4 +46,4 @@ Avant de démarrer, assurez-vous que les éléments suivants sont installés sur
 ### 1. Clonez le repository
 
 ```bash
-git clone https://github.com/votre-utilisateur/billfree.git
+git clone https://github.com/votre-utilisateur/invoicy.git
