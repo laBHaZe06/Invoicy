@@ -46,4 +46,4 @@ Avant de démarrer, assurez-vous que les éléments suivants sont installés sur
 ### 1. Clonez le repository
 
 ```bash
-git clone https://github.com/votre-utilisateur/invoicy.git
+git clone git@github.com:laBHaZe06/Invoicy.git
