@@ -17,11 +17,6 @@ jobs:
           name: Vérifier le contenu du dossier backend
           command: ls -l backend # Vérifie que le répertoire backend est bien là
       - run:
-          name: Installer les dépendances Composer
-          command: |
-            cd backend
-            composer install 
-      - run:
           name: Exécuter les tests PHPUnit
           command: |
             cd backend
@@ -41,11 +36,6 @@ jobs:
       - run:
           name: Vérifier le contenu du frontend
           command: ls -l  # Vérifie que le répertoire frontend est bien là
-      - run:
-          name: Installer les dépendances npm
-          command: |
-            cd frontend
-            npm install
       - run:
           name: Exécuter les tests Frontend
           command: |
