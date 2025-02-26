@@ -1,12 +1,12 @@
-version: '3.9'
+version: '3.8'
 
 services: 
   db:
-    image: mysql:8.0
-    container_name: billfree_db
+    image: mysql:5.7
+    container_name: invoicy_db
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: billfree_db
+      MYSQL_DATABASE: invoicy_db
     volumes:
       - db_data:/var/lib/mysql
     ports:
@@ -14,7 +14,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: billfree_phpmyadmin
+    container_name: invoicy_phpmyadmin
     restart: always
     ports:
       - "8080:80"
@@ -25,10 +25,19 @@ services:
     depends_on:
       - db
 
+  maildev:
+    image: maildev/maildev
+    container_name: invoicy_maildev
+    command: bin/maildev --web 80 --smtp 1025 --hide-extensions STARTTLS
+    ports:
+      - 1080:80
+      - 1025:25
+    restart: always
+
   backend:
     build:
       context: ./backend
-    container_name: billfree_backend
+    container_name: invoicy_backend
     ports:
       - "8000:8000"
     volumes:
@@ -36,12 +45,12 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: mysql://root:root@db:3306/billfree_db
+      DATABASE_URL: mysql://root:root@db:3306/invoicy_db
 
   frontend:
     build:
       context: ./frontend
-    container_name: billfree_frontend
+    container_name: invoicy_frontend
     ports:
       - "3000:3000"
     volumes:

@@ -1,0 +1,18 @@
+nav {
+    height: 40px; /* Hauteur fixe de la navbar */
+    display: flex;
+    align-items: center;
+    padding: 0 10px; /* Un peu d'espace à gauche/droite */
+  }
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px; /* Hauteur fixe pour la navbar */
+  }
+  
+  .logo img {
+    display: block;
+    margin-top:-25px;
+  }
+  

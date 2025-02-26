@@ -4,14 +4,14 @@ FROM node:20.17.0-alpine
 # Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Copier le fichier package.json et installer les dépendances
-COPY package.json ./
-RUN npm install
+# Copier uniquement les fichiers nécessaires pour installer les dépendances
+COPY package.json package-lock.json* ./ 
 
-# Copier le code source
+# Installer les dépendances en mode production
+RUN npm ci --omit=dev
+
+# Copier le code source de l'application
 COPY . .
-
-RUN chown -R root:root /app
 
 # Construire l'application Next.js
 RUN npm run build
@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Lancer l'application
-CMD ["next","start"]
+CMD ["npm", "run", "start"]

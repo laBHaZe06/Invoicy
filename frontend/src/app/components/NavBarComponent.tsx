@@ -18,6 +18,7 @@ import Grid from "@mui/material/Grid2";
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
 import { keyframes } from "@mui/system";
+import LogoNav from "./LogoNav";
 
 // humber menu props typescript interface
 interface THamburgerMenuProps {
@@ -172,7 +173,7 @@ const NavbarComponent = () => {
 
       <Typography
         component={Link}
-        href="/menu-one"
+        href="/about"
         fontWeight={600}
         color="inherit"
         sx={{
@@ -201,7 +202,7 @@ const NavbarComponent = () => {
 
       <Typography
         component={Link}
-        href="/menu-two"
+        href="/faq"
         fontWeight={600}
         color="inherit"
         sx={{
@@ -230,7 +231,7 @@ const NavbarComponent = () => {
 
       <Typography
         component={Link}
-        href="/menu-three"
+        href="/connexion"
         fontWeight={600}
         color="inherit"
         sx={{
@@ -284,7 +285,7 @@ const NavbarComponent = () => {
             justifyContent="space-between"
             alignItems="center"
             sx={{
-              padding: "8px 0",
+              padding: "10px 10px",
               border: 'thick double white',
               width: '100%',
               overflow: 'hidden',
@@ -297,7 +298,7 @@ const NavbarComponent = () => {
             {/* logo */}
             <Box component={Link} href="/" color="white">
               <Typography fontWeight={600} variant="h5">
-               &nbsp;&nbsp;Your <Box component="span">Brand Logo</Box>
+               &nbsp;&nbsp;<Box component="span"><LogoNav/></Box>
               </Typography>
             </Box>
 
@@ -364,7 +365,7 @@ const NavbarComponent = () => {
 const HamburgerMenu = ({ handleDrawerOpen }: THamburgerMenuProps) => {
   return (
     <IconButton
-      sx={{ display: { md: "block", lg: "none" } }}
+      sx={{ display: { md: "block", lg: "none"}}}
       onClick={handleDrawerOpen}
     >
       <MenuIcon />
