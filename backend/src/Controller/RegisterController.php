@@ -85,25 +85,43 @@ class RegisterController extends AbstractController
         ], 201);
     }
 
-    #[Route('/verif/{token}', name: 'verify_user')]
+    #[Route('/api/verif/{token}', name: 'verify_user')]
     public function verifUser(string $token, JWTService $jwt, EntityManagerInterface $em): JsonResponse
     {
-        // On vérifie si le token est valide (cohérent, pas expiré et signature correcte)
-        if($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, $this->getParameter('app.jwtsecret'))){
-            // Le token est valide
-            // On récupère les données (payload)
-            $payload = $jwt->getPayload($token);
-            // On récupère le user
-            $user = $this->userRepository->find($payload['id']);
-
-            // On vérifie qu'on a bien un user et qu'il n'est pas déjà activé
-            if($user && !$user->isVerified()){
-                $user->setIsVerified(true);
-                $em->flush();
-                return new JsonResponse(['message' => 'Utilisateur activé'], 200);
+        try {
+            error_log("🔍 Token reçu : " . $token); // Debug du token
+    
+            if ($jwt->isValid($token) && !$jwt->isExpired($token) && $jwt->check($token, $this->getParameter('app.jwtsecret'))) {
+                error_log("✅ Token valide");
+    
+                $payload = $jwt->getPayload($token);
+                error_log("📩 Payload extrait : " . json_encode($payload));
+    
+                $user = $this->userRepository->find($payload['id']);
+                if ($user) {
+                    error_log("👤 Utilisateur trouvé : " . $user->getEmail());
+    
+                    if (!$user->isVerified()) {
+                        $user->setIsVerified(true);
+                        $em->flush();
+                        error_log("✅ Utilisateur activé");
+                        return new JsonResponse(['message' => 'Utilisateur activé'], 200);
+                    } else {
+                        error_log("⚠️ Utilisateur déjà activé");
+                        return new JsonResponse(['message' => 'Utilisateur déjà activé'], 200);
+                    }
+                } else {
+                    error_log("❌ Utilisateur non trouvé !");
+                    return new JsonResponse(['message' => 'Utilisateur non trouvé'], 404);
+                }
+            } else {
+                error_log("❌ Token invalide !");
+                return new JsonResponse(['message' => 'Token invalide'], 400);
             }
+        } catch (\Exception $e) {
+            error_log("🚨 Erreur dans la vérification : " . $e->getMessage());
+            return new JsonResponse(['message' => 'Erreur : ' . $e->getMessage()], 500);
         }
-        $this->addFlash('danger', 'Le token est invalide ou a expiré');
-        return new JsonResponse(['message' => 'Token invalide'], 400);
     }
+    
 }
