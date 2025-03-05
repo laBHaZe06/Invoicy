@@ -24,14 +24,12 @@ const ConnectComponent: React.FC = () => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     
-    console.log("Event :" , event);
     try {
       const endpoint = isRegister ? "/register" : "/login";
       const payload = isRegister
       ? { email, password, confirmPassword, firstName, lastName, statut, siren,siret, capital_social, num_rcs, acceptTerms }
       : { email, password };
       
-      console.info(payload);
           if (!acceptTerms) {
               alert("Vous devez accepter les termes et conditions.");
               return;
@@ -40,12 +38,11 @@ const ConnectComponent: React.FC = () => {
               alert("Le mot de passe doit contenir aumoins 8 caractères.");
               return;
           }
-          if (isRegister && password!== confirmPassword) {
+          if (isRegister && password !== confirmPassword) {
               alert("Les mots de passe ne correspondent pas.");
               return;
           }
 
-        console.log("API URL:", process.env.API_URL);
         const response = await fetch(`${process.env.API_URL}${endpoint}`, {
             method: "POST",
             headers: {
@@ -53,20 +50,22 @@ const ConnectComponent: React.FC = () => {
             },
             body: JSON.stringify(payload),
         });
+        console.info("Réponse reçue:", response);
+        
+        const data = await JSON.parse(await response.json());
+        console.log("Données transformées:", data);
+        console.log("Réponse transformée:", data.data);
 
-        if (!response.ok) {
-            const error = await response.json();
-            console.error("Error:", error);
-            return;
+        if (response.status !== 201) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        const data = await response.json();
         if (isRegister) {
             console.log("Inscription réussie:", data);
         } else {
             localStorage.setItem("token", data.token);
             console.log("Connexion réussie, token:", data.token);
         }
+
     } catch (error) {
         console.error("Erreur lors de la requête:", error);
     }

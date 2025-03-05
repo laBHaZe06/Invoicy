@@ -1,6 +1,113 @@
-<h1>Activation de votre compte sur Invoicy</h1>
-<p>Bonjour {{ user.firstname }},</p>
-<p>Pour activer votre compte sur Invoicy cliquez sur le lien ci-dessous.</p>
-<a href="http://localhost:3000/verif/{{ token }}">Activer mon compte</a>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activation de votre compte</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #16222A;  /* fallback for old browsers */
+            background: -webkit-radial-gradient( #181320, #251a41, #200b44);  /* Chrome 10-25, Safari 5.1-6 */
+            background: radial-gradient(#2c1557ea, #0b0416);  /* Couleur sombre pour le fond */
+            margin: 0;
+            padding: 0;
+            color: black; /* Texte en blanc pour contraster avec le fond sombre */
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background:rgba(255, 255, 255, 0.92);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(163, 243, 226, 0.27);
+        }
+        .header {
+            text-align: center;
+            color: #fff;
+            padding: 20px;
+            background:rgb(78, 153, 127);
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            text-align: center;
+            padding: 20px;
+            color: rgba(17, 17, 17, 0.85);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .content a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background-color:rgb(35, 30, 41); /* Couleur principale pour le bouton */
+            color:rgb(236, 236, 236); /* Texte du bouton en couleur sombre pour contraste */
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .content a:hover {
+            background-color: #72c38d; /* Couleur foncée au hover pour l'interaction */
+            animation: pulse 1s infinite;
+            transition: background-color 0.5s ease-in-out;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #aaa;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .expiration {
+            font-weight: bold;
+            color: rgb(185, 39, 100); /* Rouge pour l'expiration */
+        }
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
 
-<p>Merci</p>
+    <div class="container">
+        <div class="header">
+            <h1>Activation de votre compte sur Invoicy</h1>
+        </div>
+
+        <div class="content">
+            <p>Bonjour {{ data.firstname }},</p>
+            <p>Merci de vous être inscrit sur <strong>Invoicy</strong> ! Pour activer votre compte, cliquez sur le lien ci-dessous :</p>
+
+            <!-- Bouton d'activation -->
+            <a href="http://localhost:3000/verif/{{ token }}" target="_blank">Activer mon compte</a>
+            
+            <p>Ce lien expirera à <span class="expiration">{{ expirationToken|date('H:i', 'Europe/Paris') }}</span>. Si vous ne l'avez pas demandé, ignorez simplement ce message.</p>
+
+            <!-- Image ajoutée -->
+            <div class="image-container">
+                <img src="https://plus.unsplash.com/premium_photo-1679784204535-e623926075cb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZmFjdHVyZXxlbnwwfHwwfHx8MA%3D%3D" alt="Image Activation">
+            </div>
+            <div class="footer">
+                <p>Merci pour votre confiance.</p>
+                <p>L'équipe Invoicy</p>
+                <p><small>Si vous n'avez pas créé de compte, ignorez ce message.</small></p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

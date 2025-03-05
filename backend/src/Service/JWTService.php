@@ -1,105 +1,143 @@
 <?php
+
 namespace App\Service;
 
 use DateTimeImmutable;
+use Exception;
 
-class JWTService
+class JWTService 
 {
-    // On génère le token
-
     /**
-     * Génération du JWT
-     * @param array $header 
-     * @param array $payload 
-     * @param string $secret 
-     * @param int $validity 
-     * @return string 
+     * Génère un JWT.
+     *
+     * @param array $header
+     * @param array $payload
+     * @param string $secret
+     * @param int $validity Durée de validité en secondes (0 = sans expiration)
+     * @return string
      */
     public function generate(array $header, array $payload, string $secret, int $validity = 10800): string
     {
-        if($validity > 0){
+        if ($validity > 0) {
             $now = new DateTimeImmutable();
-            $exp = $now->getTimestamp() + $validity;
-    
             $payload['iat'] = $now->getTimestamp();
-            $payload['exp'] = $exp;
+            $payload['exp'] = $now->getTimestamp() + $validity;
         }
 
-        // On encode en base64
-        $base64Header = base64_encode(json_encode($header));
-        $base64Payload = base64_encode(json_encode($payload));
+        // Encodage en Base64
+        $base64Header = $this->base64UrlEncode(json_encode($header));
+        $base64Payload = $this->base64UrlEncode(json_encode($payload));
 
-        // On "nettoie" les valeurs encodées (retrait des +, / et =)
-        $base64Header = str_replace(['+', '/', '='], ['-', '_', ''], $base64Header);
-        $base64Payload = str_replace(['+', '/', '='], ['-', '_', ''], $base64Payload);
-
-        // On génère la signature
-        $secret = base64_encode($secret);
+        // Génération de la signature
         $signature = hash_hmac('sha256', $base64Header . '.' . $base64Payload, $secret, true);
+        $base64Signature = $this->base64UrlEncode($signature);
 
-        $base64Signature = base64_encode($signature);
-
-        $signature = str_replace(['+', '/', '='], ['-', '_', ''], $base64Signature);
-
-        // On crée le token
-        $jwt = $base64Header . '.' . $base64Payload . '.' . $signature;
-
-        return $jwt;
+        // Construction du token
+        return $base64Header . '.' . $base64Payload . '.' . $base64Signature;
     }
 
-    //On vérifie que le token est valide (correctement formé)
+    /**
+     * Vérifie si le format du token est valide.
+     *
+     * @param string $token
+     * @return bool
+     */
     public function isValid(string $token): bool
     {
-        return preg_match(
-            '/^[a-zA-Z0-9\-\_\=]+\.[a-zA-Z0-9\-\_\=]+\.[a-zA-Z0-9\-\_\=]+$/',
-            $token
-        ) === 1;
+        return preg_match('/^[a-zA-Z0-9\-_]+.[a-zA-Z0-9\-_]+.[a-zA-Z0-9\-_]+$/', $token) === 1;
     }
 
-    // On récupère le Payload
+    /**
+     * Récupère le payload du token.
+     *
+     * @param string $token
+     * @return array
+     */
     public function getPayload(string $token): array
     {
-        // On démonte le token
-        $array = explode('.', $token);
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            return [];
+        }
 
-        // On décode le Payload
-        $payload = json_decode(base64_decode($array[1]), true);
-
-        return $payload;
+        return json_decode(base64_decode($this->base64UrlDecode($parts[1])), true) ?? [];
     }
 
-    // On récupère le Header
+    /**
+     * Récupère le header du token.
+     *
+     * @param string $token
+     * @return array
+     */
     public function getHeader(string $token): array
     {
-        // On démonte le token
-        $array = explode('.', $token);
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            return [];
+        }
 
-        // On décode le Header
-        $header = json_decode(base64_decode($array[0]), true);
-
-        return $header;
+        return json_decode(base64_decode($this->base64UrlDecode($parts[0])), true) ?? [];
     }
 
-    // On vérifie si le token a expiré
+    /**
+     * Vérifie si le token est expiré.
+     *
+     * @param string $token
+     * @return bool
+     */
     public function isExpired(string $token): bool
     {
         $payload = $this->getPayload($token);
 
-        $now = new DateTimeImmutable();
+        if (!isset($payload['exp'])) {
+            return true; // Considérer comme expiré si aucune date d'expiration n'est présente
+        }
 
-        return $payload['exp'] < $now->getTimestamp();
+        return $payload['exp'] < (new DateTimeImmutable())->getTimestamp();
     }
 
-    // On vérifie la signature du Token
-    public function check(string $token, string $secret)
+    /**
+     * Vérifie la signature du token.
+     *
+     * @param string $token
+     * @param string $secret
+     * @return bool
+     */
+    public function check(string $token, string $secret): bool
     {
-        // On récupère le header et le payload
-        $header = $this->getHeader($token);
-        $payload = $this->getPayload($token);
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            return false;
+        }
 
-        // On régénère un token
-        $verifToken = $this->generate($header, $payload, $secret, 0);
+        [$header, $payload, $signature] = $parts;
 
-        return $token === $verifToken;
+        // Recrée la signature à partir des données
+        $expectedSignature = hash_hmac('sha256', $header . '.' . $payload, $secret, true);
+        $expectedSignature = $this->base64UrlEncode($expectedSignature);
+
+        return hash_equals($expectedSignature, $signature);
+    }
+
+    /**
+     * Encodage Base64URL (sans padding).
+     *
+     * @param string $data
+     * @return string
+     */
+    private function base64UrlEncode(string $data): string
+    {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+
+    /**
+     * Décodage Base64URL.
+     *
+     * @param string $data
+     * @return string
+     */
+    private function base64UrlDecode(string $data): string
+    {
+        return strtr($data, '-_', '+/');
     }
 }

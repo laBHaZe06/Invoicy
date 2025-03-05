@@ -18,7 +18,10 @@ body {
 
 body {
   color: var(--foreground);
-  background-image: linear-gradient(to top, #18171f, #302c41, #413957, #514268, #603e83);
+  background: #16222A;  /* fallback for old browsers */
+  background: -webkit-radial-gradient( #181320,#251a41, #200b44);  /* Chrome 10-25, Safari 5.1-6 */
+  background: radial-gradient(#2c1557ea,#0b0416 ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

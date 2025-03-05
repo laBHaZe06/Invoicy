@@ -78,4 +78,6 @@ EXPOSE 8000
 
 #run the script run.sh with the following permissions 
 CMD ["/bin/bash", "-c", "/var/www/backend/run.sh"]
-
+#cmd apache2-foreground
+# CMD ["apache2-foreground"]
+# CMD ["symfony", "server:start", "--no-tls", "--port=8000", "--dir=public", "--allow-all-ip"]

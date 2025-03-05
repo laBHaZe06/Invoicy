@@ -20,10 +20,10 @@ error_message() {
 command -v composer >/dev/null 2>&1 || { error_message "Composer n'est pas installé."; exit 1; }
 command -v symfony >/dev/null 2>&1 || { error_message "Symfony CLI n'est pas installé."; exit 1; }
 
-# Vérifier si des dépendances sont manquantes
-if [ ! -d "vendor" ] || [ -n "$(composer install  2>&1 | grep 'Would install')" ]; then
+# Vérifier si les dépendances sont déjà installées
+if [ ! -d "vendor" ] || [ -n "$(composer install --dry-run 2>&1 | grep 'Would install')" ]; then
     log_message "Installation ou mise à jour des dépendances..."
-    composer install
+    composer install --no-interaction --prefer-dist --optimize-autoloader
 else
     log_message "Les dépendances sont déjà installées, pas de mise à jour nécessaire."
 fi
@@ -48,7 +48,7 @@ if ! symfony console cache:warmup; then
 fi
 
 # Vérifier si le serveur Symfony tourne déjà sur le port 8000
-if lsof -i :8000 >/dev/null; then
+if lsof -i :8000 >/dev/null 2>&1; then
     log_message "Le serveur Symfony tourne déjà sur le port 8000."
 else
     log_message "Démarrage du serveur Symfony..."

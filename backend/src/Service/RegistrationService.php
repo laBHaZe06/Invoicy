@@ -4,6 +4,7 @@ namespace App\Service;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -15,6 +16,7 @@ class RegistrationService
                                 private UserPasswordHasherInterface $encoder,
                                 private EntityManagerInterface $entityManager,
                                 private PasswordChecker $passwordChecker,
+                                private JWTTokenManagerInterface $JWTManager,
                                 private KernelInterface $kernel) {}
 
     public function checkValues($values)
@@ -40,17 +42,19 @@ class RegistrationService
         $user->setCreatedAt(new \DateTimeImmutable());
         $user->setUpdatedAt(new \DateTimeImmutable());
 
-        $user->setVerified(true);
+        $user->setVerified(false);
         $user->setRoles(['ROLE_USER']);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
-        // var_dump($user);
-        //get id of user
         $id = $user->getId();
-        // var_dump($id);
+        //create a new token for the user with the user id and email
+        $token = $this->JWTManager->create($user);
+        
 
-        return new JsonResponse(['success' => 'Registration successful!','user_id' => $id, 'firstname'=> $user->getFirstname(), 'email' => $user->getEmail(), 201]);
+
+
+        return new JsonResponse(['success' => 'Registration successful!','user_id' => $id,'email' => $user->getEmail(),'firstname'=> $user->getFirstname(), 'token' => $token], 201);
     }
 
 
