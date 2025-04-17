@@ -29,11 +29,12 @@ describe("Page App", () => {
 
 // Test for ConnectComponent component
 describe("ConnectComponent", () => {
-  it("renders a form", () => {
+  it("renders a form", async () => {
     render(<ConnectComponent />);
-
-    const form = screen.getByRole("form");
+    const form = await screen.findByRole("form");
     expect(form).toBeDefined();
+    expect(screen.getByLabelText(/email/i)).toBeDefined();
+    expect(screen.getByLabelText(/password/i)).toBeDefined();
   });
 });
 
