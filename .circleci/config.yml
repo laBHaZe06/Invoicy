@@ -48,6 +48,8 @@ jobs:
           command: |
             cd frontend
             npm install
+            npm audit fix
+            
       - run:
           name: Exécuter les tests Jest
           command: |
