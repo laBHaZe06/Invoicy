@@ -4,6 +4,8 @@ jobs:
   test_backend:
     docker:
       - image: cimg/php:8.2-node  # Utiliser une image PHP avec Node
+    environment:
+      SKIP_PASSWORD_WARMER: 1
     # working_directory: ./backend  # On définit ici le répertoire de travail par défaut
     steps:
       - checkout

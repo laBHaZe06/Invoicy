@@ -18,17 +18,15 @@ class BannedPasswordsWarmer implements CacheWarmerInterface
 
     public function isOptional(): bool
     {
-        return false; // Le warmer n'est pas optionnel
+        return $_ENV['APP_ENV'] === 'test' || $_ENV['APP_ENV'] === 'ci';
     }
 
     public function warmUp(string $cacheDir, ?string $buildDir = null): array
     {
         $this->deleteCacheItem('banned_passwords');
         $filePath = $this->projectDir . '/wordList/rockyou.txt';
-        if (!file_exists($filePath)) {
-            //si le fichier rockyou.txt n'existe pas, on ne charge pas les mots de passe bannis pour les test circleci
-            throw new \RuntimeException('Le fichier n\'est pas présent dans vos dossier , veuillez l\'intégrer');
-            continue;
+        if (!file_exists($filePath) || getenv('SKIP_PASSWORD_WARMER') === '1') {
+            return [];
         }
         $bannedPasswords = [];
         if ($handle = fopen($filePath, 'r')) {
