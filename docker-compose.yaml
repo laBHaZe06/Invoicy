@@ -47,6 +47,14 @@ services:
     environment:
       DATABASE_URL: mysql://root:root@db:3306/invoicy_db
 
+  # ai:
+  #   build: ./ai-facturation
+  #   container_name: ai-facturation
+  #   volumes:
+  #     - ./ai-facturation:/var/wwww/ai
+  #   depends_on:
+  #     - backend
+
   frontend:
     build:
       context: ./frontend

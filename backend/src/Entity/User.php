@@ -2,11 +2,29 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+    operations: [
+        new Get(),
+        new Post(),
+        new Put(),
+        new Delete(),
+    ],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']]
+)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -17,39 +35,49 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Groups(['user:write'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $statut = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $siren = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $siret = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $num_rcs = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $capital_social = null;
 
     #[ORM\Column]
@@ -63,6 +91,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $logo = null;
+
+    /**
+     * @var Collection<int, InvoiceTemplate>
+     */
+    #[ORM\OneToMany(targetEntity: InvoiceTemplate::class, mappedBy: 'owner')]
+    private Collection $invoiceTemplates;
+
+    public function __construct()
+    {
+        $this->invoiceTemplates = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -267,6 +306,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLogo(?string $logo): static
     {
         $this->logo = $logo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, InvoiceTemplate>
+     */
+    public function getInvoiceTemplates(): Collection
+    {
+        return $this->invoiceTemplates;
+    }
+
+    public function addInvoiceTemplate(InvoiceTemplate $invoiceTemplate): static
+    {
+        if (!$this->invoiceTemplates->contains($invoiceTemplate)) {
+            $this->invoiceTemplates->add($invoiceTemplate);
+            $invoiceTemplate->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoiceTemplate(InvoiceTemplate $invoiceTemplate): static
+    {
+        if ($this->invoiceTemplates->removeElement($invoiceTemplate)) {
+            // set the owning side to null (unless already changed)
+            if ($invoiceTemplate->getOwner() === $this) {
+                $invoiceTemplate->setOwner(null);
+            }
+        }
 
         return $this;
     }

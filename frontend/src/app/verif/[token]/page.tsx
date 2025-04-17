@@ -1,8 +1,8 @@
 'use client';
-import NavBarComponent from "../../components/NavBarComponent";
-import FooterComponent from "../../components/FooterComponent";
+import NavBarComponent from "@/components/Navbar/NavBarComponent";
+import FooterComponent from "@/components/Footer/FooterComponent";
 import Box from '@mui/material/Box';
-import VerifyUser from "../../components/VerifyUser";
+import VerifyUser from "@/components/Security/VerifyUser";
 
 
 export default function Page() {

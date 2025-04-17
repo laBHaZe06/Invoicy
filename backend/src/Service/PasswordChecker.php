@@ -17,9 +17,7 @@ class PasswordChecker
     {
         $cacheItem = $this->cachePool->getItem('banned_passwords');
         if (!$cacheItem->isHit()) {
-            // Le cache n'est pas disponible, gérer ce cas selon vos besoins
-            // Vous pouvez par exemple utiliser une base de données, un fichier, etc.
-            // Voir la documentation de PSR-6 pour plus d'information sur comment utiliser le cache
+            // If the cache item is not hit, it means the banned passwords are not loaded
             return false;
         }
 

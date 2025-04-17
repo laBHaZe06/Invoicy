@@ -1,14 +1,17 @@
 
-import NavBarComponent from "../components/NavBarComponent";
-import FooterComponent from "../components/FooterComponent";
+import NavBarComponent from "@/components/Navbar/NavBarComponent";
+import FooterComponent from "@/components/Footer/FooterComponent";
 import Box from '@mui/material/Box';
-import ConnectComponent from "../components/ConnectComponent";
+import ConnectComponent from "@/components/Connect/ConnectComponent";
+
+
 
 export default function Page() {
   return (
     <>
+
     <NavBarComponent/>
-    <Box sx={{mt: 5}}>
+    <Box sx={{mt: 5, zIndex: 1, position: "relative"}}>
     <ConnectComponent/>
     <FooterComponent/>
     </Box>

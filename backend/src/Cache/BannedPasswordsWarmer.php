@@ -27,17 +27,15 @@ class BannedPasswordsWarmer implements CacheWarmerInterface
         $filePath = $this->projectDir . '/wordList/rockyou.txt';
         if (!file_exists($filePath)) {
             //si le fichier rockyou.txt n'existe pas, on ne charge pas les mots de passe bannis pour les test circleci
-            
+            throw new \RuntimeException('Le fichier n\'est pas présent dans vos dossier , veuillez l\'intégrer');
             return [];
         }
         $bannedPasswords = [];
         if ($handle = fopen($filePath, 'r')) {
             while (($line = fgets($handle)) !== false) {
-                $password = trim($line);
-                if (!empty($password)) {
-                    $bannedPasswords[$password] = true;
-                }
+                $bannedPasswords[] = trim($line);
             }
+            
             fclose($handle);
         } else {
             throw new \RuntimeException('Impossible d\'ouvrir le fichier rockyou.txt.');

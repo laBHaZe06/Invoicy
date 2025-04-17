@@ -11,7 +11,7 @@ security:
                 property: email
     firewalls:
         login:
-            pattern: ^/api/login
+            pattern: ^/api/login_check
             stateless: true
             json_login:
                 check_path: /api/login_check
@@ -30,7 +30,8 @@ security:
             provider: app_user_provider
             json_login:
                 # api_login is a route we will create below
-                check_path: api_login
+                check_path: app_login
+
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -41,7 +42,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/profil,       roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/logout, roles: IS_AUTHENTICATED_ANONYMOUSLY }

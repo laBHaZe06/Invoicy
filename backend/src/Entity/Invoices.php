@@ -2,10 +2,28 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\Dto\Invoice\InvoiceInput;
+use App\Dto\Invoice\InvoiceOutput;
 use App\Repository\InvoicesRepository;
+use App\State\InvoiceProcessor;
+use App\State\InvoiceProvider;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+    operations: [
+        new Get(output: InvoiceOutput::class, provider: InvoiceProvider::class),
+        new Post(input: InvoiceInput::class, processor: InvoiceProcessor::class),
+        new Put(input: InvoiceInput::class, processor: InvoiceProcessor::class),
+        new Delete(processor: InvoiceProcessor::class),
+    ]
+)]
 #[ORM\Entity(repositoryClass: InvoicesRepository::class)]
 class Invoices
 {
@@ -15,21 +33,26 @@ class Invoices
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['invoices:read'])]
     private ?string $invoice_number = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, nullable: true)]
+    #[Groups(['invoices:read', 'invoices:write'])]
     private ?string $amount_ht = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
+    #[Groups(['invoices:read', 'invoices:write'])]
     private ?string $amount_ttc = null;
 
     #[ORM\Column(length: 355, nullable: true)]
+    #[Groups(['invoices:read', 'invoices:write'])]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
+    #[Groups(['invoices:read'])]
     private ?Clients $client = null;
 
     public function getId(): ?int
