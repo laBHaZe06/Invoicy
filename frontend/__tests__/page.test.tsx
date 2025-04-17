@@ -4,7 +4,16 @@ import {describe, expect} from '@jest/globals';
 import Page from '@/app/page';
 import ConnectComponent from '@/components/Connect/ConnectComponent';
 
-
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    refresh: jest.fn(),
+    forward: jest.fn(),
+    back: jest.fn(),
+    prefetch: jest.fn(),
+  }),
+}));
 
 // Test for Page App component
 describe("Page App", () => {
