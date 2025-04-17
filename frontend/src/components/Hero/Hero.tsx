@@ -25,7 +25,9 @@ const Hero = ()  => {
       id="hero"
       sx={{
         width: '100%',
-        backgroundRepeat: 'no-repeat',     
+        backgroundRepeat: 'no-repeat',   
+        zIndex: 5,
+        position: 'relative',
       }}
     >
       <Container

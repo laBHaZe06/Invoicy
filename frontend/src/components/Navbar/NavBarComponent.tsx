@@ -273,6 +273,7 @@ const NavbarComponent = () => {
             position: "sticky",
             overflow: 'hidden',
             top: 0,
+            zIndex: 5,
             alignItems: "center",
             justifyContent: "space-between",
             padding: "20px 0px",
@@ -370,7 +371,14 @@ const NavbarComponent = () => {
 const HamburgerMenu = ({ handleDrawerOpen }: THamburgerMenuProps) => {
   return (
     <IconButton
-      sx={{ display: { md: "block", lg: "none"}}}
+    sx={{
+      backgroundColor: (theme) => theme.palette.primary.main,
+      borderRadius: 1,
+      display: { md: "block", lg: "none" },
+      '&:hover': {
+        backgroundColor: (theme) => theme.palette.primary.main,
+      }
+    }}
       onClick={handleDrawerOpen}
     >
       <MenuIcon />

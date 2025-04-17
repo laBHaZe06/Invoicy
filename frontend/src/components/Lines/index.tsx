@@ -21,12 +21,12 @@ const scrollDown = keyframes`
 `;
 const Lines: React.FC = () => {
   const theme = useTheme();
-  const dotColor = theme.palette.mode === "dark" ? "#bc7de8" : "#34c0eb";
+  const dotColor = theme.palette.mode === "dark" ? "#bc7de8" : "#5978fd";
 
-  const rows = 15;
-  const cols = 30;
+  const rows = 25;
+  const cols = 80;
   const dotSize = 4;
-  const spacing = 28;
+  const spacing = 35;
 
   return (
     <Box
@@ -54,7 +54,7 @@ const Lines: React.FC = () => {
         }}
       >
         {Array.from({ length: rows * cols }).map((_, index) => {
-          const col = index % cols;
+          const col = index % cols ;
           const row = Math.floor(index / cols);
           const delay = (col * 100) + (row * 50); 
 
@@ -66,7 +66,6 @@ const Lines: React.FC = () => {
                 height: dotSize,
                 borderRadius: "50%",
                 backgroundColor: dotColor,
-                //  backgroundColor: "red",
                 opacity: 0,
                 animation: `${scrollDown} 6s linear ${delay}ms infinite`,
               }}

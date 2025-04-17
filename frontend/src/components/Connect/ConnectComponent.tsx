@@ -148,14 +148,14 @@ const ConnectComponent: React.FC = () => {
 
   return (
     <Container maxWidth="xs">
-      <Box sx={{ mt: 25, p: 3, boxShadow: 3, borderRadius: 2, textAlign: "center" }}>
-        <Typography variant="h5" gutterBottom sx={{ color: 'white' }}>
+      <Box sx={{ mt: 25, p: 3, boxShadow: 3, borderRadius: 2, textAlign: "center", zIndex: 5, position: 'relative', backgroundColor: 'bg.default' }}>
+        <Typography variant="h5" gutterBottom sx={{ color: 'text.main' }}>
           {isRegister ? "Create account" : "Sign in"}
         </Typography>
         {errorMessage && <Typography color="error">{errorMessage}</Typography>}
         {successMessage && <Typography sx={{ color: 'lightgreen' }}>{successMessage}</Typography>}
 
-        <form onSubmit={handleSubmit} role="form">
+        <form onSubmit={handleSubmit} role="form" >
           {isRegister ? renderStepContent() : (
             <>
               <TextField 

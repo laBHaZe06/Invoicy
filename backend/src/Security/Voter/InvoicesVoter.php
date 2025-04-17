@@ -37,20 +37,32 @@ final class InvoicesVoter extends Voter
         }
 
         $invoices = $subject; 
+        // if the user is anonymous, do not grant access
+        if (!$invoices instanceof Invoices) {
+            return false;
+        }
         
         return match($subject) {
-            // self::EDIT => $this->canEdit($invoices, $user),
-            // self::VIEW => $this->canView($invoices, $user),
+            self::EDIT => $this->canEdit($invoices, $user),
+            self::VIEW => $this->canView($invoices, $user),
             default => throw new \LogicException('This code should not be reached!')
         };
 
     }
 
+    private function canEdit(Invoices $invoices, User $user): bool
+    {
+        return $user === $this->getUser();
+    }
+    private function canView(Invoices $invoices, User $user): bool
+    {
+        return $user === $this->getUser();
+    }
+    private function getUser(): User
+    {
+        return $this->getUser();
+    }
 
-
-    // private function canView(Invoices $invoices, User $user ) {
-
-    // }
 
     // private function canEdit(Invoices $invoices, User $user) {
     //     return $user === $this->getUser();

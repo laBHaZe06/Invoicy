@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.3-apache
 
 WORKDIR /var/www/backend
 
@@ -61,6 +61,8 @@ RUN chmod +x /usr/local/bin/install-php-extensions && \
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 RUN echo 'memory_limit = 10G' > /usr/local/etc/php/conf.d/php.ini
 
+# Configuration apache
+COPY /config/vhost.conf /etc/apache2/sites-available/000-default.conf
 # Configuration de Xdebug
 COPY ./config/xdebug.ini /etc/php/8.2/apache2/conf.d/30-xdebug.ini
 COPY ./config/xdebug.ini /etc/php/8.2/cli/conf.d/30-xdebug.ini

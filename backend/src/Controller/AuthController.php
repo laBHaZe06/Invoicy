@@ -17,64 +17,42 @@ class AuthController extends AbstractController
         $this->security = $security;
     }
 
-    #login_check is the route name for the login check and get token by api platform
     #[Route(path: '/login_check', name: 'app_login', methods: ['POST'])]
-    public function login(AuthenticationUtils $authenticationUtils): JsonResponse
+    public function login(AuthenticationUtils $authenticationUtils, Request $request): JsonResponse
     {
+        
         $error = $authenticationUtils->getLastAuthenticationError();
-        if ($error) {
-            return $this->json([
-                'error' => $error->getMessage(),
-            ], 401);
-        }
-
-        /** @var UserInterface $user */
-        $user = $this->security->getUser();
+        $isAuth = $this->security->getUser() !== null;
         
-        if (!$user) {
-            return $this->json([
-                'error' => 'Utilisateur non trouvé',
-            ], 401);
-        } 
+        $cookie = $request->cookies->get('token');
         
-        
-        return $this->json([
-            'token' => $user->getToken(),
+    
+        return new JsonResponse([
+            'isAuthenticated' => $isAuth,
+            'error' => $error,
+            'token' => $cookie,
         ]);
 
     }
 
 
-
     #[Route(path: '/profile', name: 'app_profile', methods: ['GET'])]
-    public function profile(Request $request): JsonResponse
+    public function profile(): JsonResponse
     {
-
-    /** @var UserInterface $user */
-    $user = $this->security->getUser();
-
-    if(!$user) {
-        $this->json([
-            'error' => 'Utilisateur non autorisé',
-        ], 403);
+        $user = $this->security->getUser();
+    
+        if (!$user) {
+            return $this->json(['error' => 'Non authentifié'], 403);
+        }
+    
+        return $this->json([
+            'user' => [
+                'email' => $user->getUserIdentifier(),
+                'roles' => $user->getRoles(),
+            ],
+            'token' => $this->security->getToken() ? $this->security->getToken()->getUserIdentifier() : null,
+        ]);
     }
-
-    // $displayName = $user->getDisplayName(); 
-    $firstName = $user->getFirstName(); 
-    $lastName = $user->getLastName(); 
-
-    $token = $request->getContent('token');
-
-    return $this->json([
-        'user' => [
-            'identifier' => $user->getUserIdentifier(),
-            // 'display_name' => $displayName,
-            'first_name' => $firstName,
-            'last_name' => $lastName,
-            'token' => $token,
-        ],
-    ]);
-}
 
 
     #[Route(path: '/logout', name: 'app_logout', methods: ['POST', 'GET'])]

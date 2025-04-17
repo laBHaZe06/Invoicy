@@ -12,6 +12,9 @@ export const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
             primary: '#ffffff',
             secondary: '#191a21',
           },
+          bg: {
+            default: '#ffffff',
+          },  
         }
       : {
           primary: { main: '#480ca8' },
@@ -20,6 +23,9 @@ export const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
           text: {
             primary: '#ffffff',
             secondary: '#21222c',
+          },
+          bg: {
+            default: 'transparent',
           },
         }),
       },
