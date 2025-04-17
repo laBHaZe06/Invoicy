@@ -155,7 +155,7 @@ const ConnectComponent: React.FC = () => {
         {errorMessage && <Typography color="error">{errorMessage}</Typography>}
         {successMessage && <Typography sx={{ color: 'lightgreen' }}>{successMessage}</Typography>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} role="form">
           {isRegister ? renderStepContent() : (
             <>
               <TextField 
