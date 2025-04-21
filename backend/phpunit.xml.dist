@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          backupGlobals="false"
          colors="true"
          bootstrap="tests/bootstrap.php"
-         convertDeprecationsToExceptions="false"
 >
     <php>
         <ini name="display_errors" value="1" />
         <ini name="error_reporting" value="-1" />
+
+        <!-- Symfony environment setup -->
         <server name="APP_ENV" value="test" force="true" />
-        <server name="SHELL_VERBOSITY" value="-1" />
+        <server name="KERNEL_CLASS" value="App\Kernel" />
+
+        <!-- Optionally keep Symfony PHPUnit bridge if needed -->
         <server name="SYMFONY_PHPUNIT_REMOVE" value="" />
         <server name="SYMFONY_PHPUNIT_VERSION" value="9.5" />
     </php>
@@ -23,16 +24,11 @@
         </testsuite>
     </testsuites>
 
-    <coverage processUncoveredFiles="true">
-        <include>
+    <!-- Optional: Use code coverage only if needed -->
+    <coverage>
+        <directories>
             <directory suffix=".php">src</directory>
-        </include>
+        </directories>
     </coverage>
 
-    <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
-    </listeners>
-
-    <extensions>
-    </extensions>
 </phpunit>
