@@ -65,7 +65,7 @@ jobs:
       - run:
           name: Vérifier si la base de données est prête
           command: |
-            until mysql -h mysql -u root -proot -e "SHOW DATABASES;"; do
+            until mysql -h 127.0.0.1 -u root -proot -e "SHOW DATABASES;"; do
               echo "Attente de MySQL..."
               sleep 2
             done
