@@ -27,6 +27,14 @@ services:
       timeout: 10s
 
 jobs:
+  check_mysql_logs:
+    docker:
+      - image: cimg/mysql:5.7
+    steps:
+      - run:
+          name: Vérifier les logs de MySQL
+          command: docker logs $(docker ps -q -f ancestor=mysql:5.7)
+
   test_backend:
     executor: php-node-executor
     steps:
@@ -64,7 +72,7 @@ jobs:
       - run:
           name: Vérifier si la base de données est prête
           command: |
-            until mysql -h 127.0.0.1 -u root -proot -e "SHOW DATABASES;" 2>/dev/null; do
+            until nc -zv 127.0.0.1 3306; do
               echo "Attente de MySQL..."
               sleep 5
             done
@@ -122,6 +130,7 @@ workflows:
   version: 2
   pipeline:
     jobs:
+      - check_mysql_logs
       - test_backend
       - test_frontend
       - build_backend:
