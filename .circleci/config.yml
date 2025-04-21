@@ -4,47 +4,32 @@ executors:
   php-node-executor:
     docker:
       - image: cimg/php:8.2-node
-    working_directory: ~/repo
+        environment:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_NAME: invoicy_db
+          DB_USER: root
+          DB_PASSWORD: root
+      - image: mysql:5.7
+        environment:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: invoicy_db
+          ports: "3306:3306"
 
   node-executor:
     docker:
       - image: cimg/node:20.17.0
     working_directory: ~/repo
 
-services:
-  mysql:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: invoicy_db
-    ports:
-      - "3306:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      retries: 5
-      start_period: 5s
-      timeout: 10s
-
 jobs:
-  check_mysql_logs:
-    docker:
-      - image: cimg/mysql:5.7
-    steps:
-      - run:
-          name: Vérifier les logs de MySQL
-          command: docker logs $(docker ps -q -f ancestor=mysql:5.7)
-
   test_backend:
     executor: php-node-executor
     steps:
       - checkout
       - run:
-          name: Vérifier le contenu du dépôt après checkout
-          command: ls -lR
-      - run:
-          name: Vérifier le contenu du dossier backend
-          command: ls -l backend
+          name: Attendre que MySQL soit prêt
+          command: |
+            dockerize -wait tcp://127.0.0.1:3306 -timeout 60s
       - run:
           name: Générer le fichier .env
           command: cp backend/.env.local backend/.env
@@ -54,51 +39,17 @@ jobs:
             cd backend
             composer install
       - run:
-          name: Exécuter les tests PHPUnit
+          name: Exécuter les tests
           command: |
             cd backend
-            ./vendor/bin/php-cs-fixer fix tests
-            ./vendor/bin/php-cs-fixer fix src
-
-  build_backend:
-    executor: php-node-executor
-    steps:
-      - checkout
-      - run:
-          name: Installer le client MySQL avec les bons privilèges
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y mysql-client
-      - run:
-          name: Vérifier si la base de données est prête
-          command: |
-            until nc -zv 127.0.0.1 3306; do
-              echo "Attente de MySQL..."
-              sleep 5
-            done
-            echo "MySQL est prêt !"
-      - run:
-          name: Installer les dépendances Composer
-          command: |
-            cd backend
-            composer install
-      - run:
-          name: Exécuter le nettoyage du cache et les migrations Doctrine
-          command: |
-            cd backend
-            php bin/console cache:clear
+            php bin/console doctrine:database:create --if-not-exists
             php bin/console doctrine:migrations:migrate --no-interaction
+            php bin/phpunit
 
   test_frontend:
     executor: node-executor
     steps:
       - checkout
-      - run:
-          name: Vérifier le contenu du dépôt après checkout
-          command: ls -lR
-      - run:
-          name: Vérifier le contenu du frontend
-          command: ls -l frontend
       - run:
           name: Installer les dépendances Node.js
           command: |
@@ -130,12 +81,8 @@ workflows:
   version: 2
   pipeline:
     jobs:
-      - check_mysql_logs
       - test_backend
       - test_frontend
-      - build_backend:
-          requires:
-            - test_backend
       - build_frontend:
           requires:
             - test_frontend
