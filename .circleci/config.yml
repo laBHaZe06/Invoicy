@@ -45,7 +45,7 @@ jobs:
           command: ls -lR 
       - run:
           name: Vérifier le contenu du frontend
-          command: ls -l  # Vérifie que le répertoire frontend est bien là
+          command: ls -l frontend # Vérifie que le répertoire frontend est bien là
       - run:
           name: Installer les dépendances Node.js
           command: |
@@ -67,6 +67,15 @@ jobs:
       - image: cimg/php:8.2-node
     steps:
       - checkout
+      - run:
+          name: Vérifier le contenu du dépôt après checkout
+          command: ls -lR
+      - run:
+          name: Allez dans le répertoire backend
+          command: cd backend
+      - run:
+          name: Générer le fichier .env
+          command: cp backend/.env.local backend/.env
       - run:
           name: Installer les dépendances Composer
           command: |
