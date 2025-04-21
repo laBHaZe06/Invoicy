@@ -11,10 +11,11 @@ executors:
           DB_USER: root
           DB_PASSWORD: root
       - image: mysql:5.7
-        environment:
+          environment:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: invoicy_db
-          ports: "3306:3306"
+        ports:
+          - "3306:3306"
 
   node-executor:
     docker:
@@ -39,22 +40,12 @@ jobs:
             cd backend
             composer install
       - run:
-          name: Lancer PHP-CS-Fixer sur le dossier src
-          command: |
-            cd backend
-            ./vendor/bin/php-cs-fixer fix src --allow-risky=yes --using-cache=no
-      - run:
-          name: Lancer PHP-CS-Fixer sur le dossier tests
-          command: |
-            cd backend
-            ./vendor/bin/php-cs-fixer fix tests --allow-risky=yes --using-cache=no
-      - run:
-          name: Exécuter les migrations et les tests
+          name: Exécuter les tests
           command: |
             cd backend
             php bin/console doctrine:database:create --if-not-exists
             php bin/console doctrine:migrations:migrate --no-interaction
-            ./vendor/bin/phpunit
+            php bin/phpunit
 
   test_frontend:
     executor: node-executor
