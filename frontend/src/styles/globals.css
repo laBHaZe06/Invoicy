@@ -58,7 +58,8 @@ a {
 }
 
 /* LIGHT MODE */
-.light .MuiCardContent-root
+.light .MuiCardContent-root,
+.light .MuiCard-root
  {
   background: white;
   color: #313131 !important;
@@ -68,10 +69,10 @@ a {
 }
 
 /* DARK MODE */
-.dark .MuiCardContent-root
+.dark .MuiCardContent-root,
+.dark .MuiCard-root
 {
   background: white;
-  background: rgba(106, 60, 180, 0.432);
   color: #313131 !important;
 }
 

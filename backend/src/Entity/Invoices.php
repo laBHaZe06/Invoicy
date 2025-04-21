@@ -7,22 +7,53 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Dto\Invoice\InvoiceInput;
-use App\Dto\Invoice\InvoiceOutput;
+use App\Dto\Invoice\InvoicesDto;
 use App\Repository\InvoicesRepository;
-use App\State\InvoiceProcessor;
-use App\State\InvoiceProvider;
+use App\State\Invoice\InvoiceProvider;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
+    //use InvoiceDto class
     operations: [
-        new Get(output: InvoiceOutput::class, provider: InvoiceProvider::class),
-        new Post(input: InvoiceInput::class, processor: InvoiceProcessor::class),
-        new Put(input: InvoiceInput::class, processor: InvoiceProcessor::class),
-        new Delete(processor: InvoiceProcessor::class),
-    ]
+        new Get(
+            security: "is_granted('ROLE_USER')",
+            normalizationContext: ['groups' => ['invoices:read']],
+            class: InvoicesDto::class,
+            provider: InvoiceProvider::class,
+        ),
+        new Post(
+            name: 'invoices',
+            class: InvoicesDto::class,
+            provider: InvoiceProvider::class,
+            uriTemplate: '/invoices/{id}/profile',
+            security: "is_granted('ROLE_USER')"
+        ),
+        new Put(
+            security: "is_granted('ROLE_USER')",
+            class: InvoicesDto::class,
+            provider: InvoiceProvider::class,
+            uriTemplate: '/invoices/{id}/profile',
+            normalizationContext: ['groups' => ['invoices:read']],
+            denormalizationContext: ['groups' => ['invoices:write']]
+        ),
+        new Delete(
+            security: "is_granted('ROLE_USER')",
+            class: InvoicesDto::class,
+            provider: InvoiceProvider::class,
+            uriTemplate: '/invoices/{id}/profile',
+            normalizationContext: ['groups' => ['invoices:read']],
+            denormalizationContext: ['groups' => ['invoices:write']]
+        ),
+    ],
+
+    normalizationContext: ['groups' => ['invoices:read']],
+    denormalizationContext: ['groups' => ['invoices:write']],
+    paginationClientItemsPerPage: true,
+    paginationItemsPerPage: 10,
+    paginationMaximumItemsPerPage: 100,
+    paginationClientEnabled: true,
 )]
 #[ORM\Entity(repositoryClass: InvoicesRepository::class)]
 class Invoices
@@ -39,11 +70,11 @@ class Invoices
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
     #[Groups(['invoices:read', 'invoices:write'])]
     private ?string $amount_ht = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2)]
     #[Groups(['invoices:read', 'invoices:write'])]
     private ?string $amount_ttc = null;
 
@@ -54,6 +85,9 @@ class Invoices
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     #[Groups(['invoices:read'])]
     private ?Clients $client = null;
+
+    #[ORM\ManyToOne(inversedBy: 'invoices')]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -128,6 +162,18 @@ class Invoices
     public function setClient(?Clients $client): static
     {
         $this->client = $client;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

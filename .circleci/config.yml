@@ -19,6 +19,9 @@ jobs:
           name: Vérifier le contenu du dossier backend
           command: ls -l backend # Vérifie que le répertoire backend est bien là
       - run:
+          name: Générer le fichier .env
+          command: cp backend/.env.local backend/.env
+      - run:
           name: Installer les dépendances PHP
           command: |
             cd backend

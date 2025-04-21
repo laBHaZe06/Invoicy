@@ -1,0 +1,92 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content %}
+    <div style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+        <h1 style="font-size: 2rem; margin-bottom: 2rem; text-align: center;">📊 Tableau de bord Invoicy</h1>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center;">
+
+            <!-- Inscriptions des utilisateurs -->
+            <div style="flex: 1 1 45%; background: #f9f9f9; border-radius: 12px; padding: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h2 style="text-align: center; margin-bottom: 1rem;">👥 Inscriptions des utilisateurs</h2>
+                <canvas id="userRegistrationsChart" height="200"></canvas>
+            </div>
+
+            <!-- Vérifiés vs Non vérifiés -->
+            <div style="flex: 1 1 45%; background: #f9f9f9; border-radius: 12px; padding: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h2 style="text-align: center; margin-bottom: 1rem;">✔️ Utilisateurs vérifiés</h2>
+                <canvas id="userVerificationChart" height="200"></canvas>
+            </div>
+
+            <!-- Modèles de factures par utilisateur -->
+            <div style="flex: 1 1 45%; background: #f9f9f9; border-radius: 12px; padding: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h2 style="text-align: center; margin-bottom: 1rem;">📄 Modèles par utilisateur</h2>
+                <canvas id="invoiceTemplateChart" height="200"></canvas>
+            </div>
+
+            <!-- Somme totale des factures -->
+            <div style="flex: 1 1 45%; background: #f9f9f9; border-radius: 12px; padding: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h2 style="text-align: center; margin-bottom: 1rem;">💰 Total factures / mois (€)</h2>
+                <canvas id="invoiceSumChart" height="200"></canvas>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Inscriptions par mois
+        new Chart(document.getElementById('userRegistrationsChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ labels|json_encode|raw }},
+                datasets: [{
+                    label: 'Inscriptions',
+                    data: {{ userRegistrations|json_encode|raw }},
+                    backgroundColor: 'rgba(84, 175, 236, 0.5)'
+                }]
+            }
+        });
+
+        // Utilisateurs vérifiés
+        new Chart(document.getElementById('userVerificationChart'), {
+            type: 'doughnut',
+            data: {
+                labels: {{ userVerificationLabels|json_encode|raw }},
+                datasets: [{
+                    data: {{ userVerificationData|json_encode|raw }},
+                    backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)']
+                }]
+            }
+        });
+
+        // Modèles de factures par utilisateur
+        new Chart(document.getElementById('invoiceTemplateChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ invoiceTemplateLabels|json_encode|raw }},
+                datasets: [{
+                    label: 'Modèles',
+                    data: {{ invoiceTemplateData|json_encode|raw }},
+                    backgroundColor: 'rgba(153, 102, 255, 0.5)'
+                }]
+            }
+        });
+
+        // Somme totale des factures
+        new Chart(document.getElementById('invoiceSumChart'), {
+            type: 'line',
+            data: {
+                labels: {{ invoiceSumLabels|json_encode|raw }},
+                datasets: [{
+                    label: 'Total (€)',
+                    data: {{ invoiceSumData|json_encode|raw }},
+                    backgroundColor: 'rgba(255, 206, 86, 0.5)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    fill: false,
+                    tension: 0.2
+                }]
+            }
+        });
+    </script>
+{% endblock %}

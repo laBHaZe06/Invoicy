@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import "../../styles/logoNav.css";
+import "@/styles/logoNav.css";
 import { useColorMode } from "@/context/ColorModeContext";
 
 export default function LogoNav() {

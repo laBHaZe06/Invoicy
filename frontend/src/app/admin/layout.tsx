@@ -2,39 +2,58 @@
 
 import { useState, useEffect } from "react";
 import {
-  AppBar, Box, CssBaseline, Drawer, IconButton, List,
-  ListItem, ListItemIcon, ListItemText, Toolbar, Typography, Tooltip,
-  Modal, Button
+  Box,
+  CssBaseline,
+  Drawer,
+  Toolbar,
+  Typography,
+  Modal,
+  Button
 } from "@mui/material";
-import {
-  Dashboard, Receipt, Notifications, ChevronLeft, ChevronRight,
-  AccountCircle, HomeSharp
-} from "@mui/icons-material";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useColorMode } from "@/context/ColorModeContext";
-import ToggleColorMode from "@/components/Toggle/ToggleColorMode";
-import useAuth from "@/hooks/useAuth"; // Assure-toi d'importer le hook
+
+import useAuth from "@/hooks/useAuth";
+import SideBarComponent from "@/components/SideBar/SideBarComponents";
+import TopBarComponent from "@/components/TopBar/TopBarComponent"
 const drawerWidth = 240;
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, tokenExpired, userData, loading } = useAuth(); // Utilisation du hook useAuth
+  const { isAuthenticated, tokenExpired, userData, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const { mode, toggleColorMode } = useColorMode();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!loading) {
-      if (!isAuthenticated) {
+  const handleLogout = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch(`${process.env.API_URL}/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        localStorage.removeItem("token");
         router.push("/connexion");
+      } else {
+        console.error("Erreur lors du logout :", await res.text());
       }
+    } catch (error) {
+      console.error("Erreur réseau pendant le logout :", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push("/connexion");
     }
   }, [isAuthenticated, loading, router]);
 
   useEffect(() => {
     if (tokenExpired) {
-      // Affichage d'un message modal ou d'une alerte si le token a expiré
-      router.push("/connexion"); // Redirige l'utilisateur vers la page de connexion
+      router.push("/connexion");
     }
   }, [tokenExpired, router]);
 
@@ -42,74 +61,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.push("/connexion");
   };
 
-  const drawer = (
-    <Box
-      sx={{
-        width: sidebarOpen ? drawerWidth : 70,
-        bgcolor: "primary.main",
-        color: "text.primary",
-        height: "100vh",
-        transition: "width 0.3s",
-      }}
-    >
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2 }}>
-        {sidebarOpen && <Typography variant="h6">Admin Panel</Typography>}
-        <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ color: "white" }}>
-          {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
-        </IconButton>
-      </Box>
-      <List>
-        {[
-          { text: "Dashboard", icon: <Dashboard />, link: "/admin/dashboard" },
-          { text: "Factures", icon: <Receipt />, link: "/admin/invoices" },
-          { text: "Rappels", icon: <Notifications />, link: "/admin/rappels" },
-          { text: "Profil", icon: <AccountCircle />, link: "/admin/profil" },
-          { text: "Accueil", icon: <HomeSharp />, link: "/" },
-        ].map(({ text, icon, link }) => (
-          <Link key={text} href={link} style={{ textDecoration: "none", color: "inherit" }}>
-            <Tooltip title={text} placement="right" disableHoverListener={sidebarOpen}>
-              <ListItem
-                component="li"
-                sx={{
-                  transition: "background 0.3s",
-                  "&:hover": { bgcolor: "rgba(38, 202, 223, 0.42)" },
-                }}
-              >
-                <ListItemIcon sx={{ color: "inherit", minWidth: sidebarOpen ? 40 : 50 }}>
-                  {icon}
-                </ListItemIcon>
-                {sidebarOpen && <ListItemText primary={text} />}
-              </ListItem>
-            </Tooltip>
-          </Link>
-        ))}
-      </List>
-    </Box>
-  );
-
   return (
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <AppBar
-          position="fixed"
-          sx={{
-            width: `calc(100% - ${sidebarOpen ? drawerWidth : 70}px)`,
-            ml: `${sidebarOpen ? drawerWidth : 70}px`,
-            transition: "width 0.3s",
-            backgroundColor: "primary.main",
-          }}
-        >
-          <Toolbar>
-            <Typography variant="h6" sx={{ flexGrow: 1 }}>
-              {isAuthenticated ? `Bienvenue, ${userData?.firstName}` : "Tableau de bord"}
-            </Typography>
-            <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
-          </Toolbar>
-        </AppBar>
+
+        {/* AppBar */}
+        <TopBarComponent
+            isAuthenticated={isAuthenticated}
+            username={userData?.username}
+            sidebarOpen={sidebarOpen}
+          />
+
+        {/* Sidebar */}
         <Drawer variant="permanent" open>
-          {drawer}
+          <SideBarComponent
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+            handleLogout={handleLogout}
+          />
         </Drawer>
+
+        {/* Main content */}
         <Box
           component="main"
           sx={{
@@ -119,7 +92,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             ml: { sm: `${sidebarOpen ? drawerWidth : 70}px` },
             transition: "width 0.3s",
             zIndex: 5,
-            position: 'relative',
+            position: "relative",
           }}
         >
           <Toolbar />

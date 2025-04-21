@@ -18,14 +18,15 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Skeleton,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import InvoiceEditModal, { Invoice } from "@/components/Modal/InvoiceEditModal";
 import InvoiceShowModal from "@/components/Modal/InvoiceShowModal";
 
-// Exemple de données simulées
+// Données simulées
 const fakeInvoices: Invoice[] = [
   { id: 1, client: "Jean Dupont", amount: 320, status: "payée" },
   { id: 2, client: "Emma Durand", amount: 120, status: "en attente" },
@@ -40,7 +41,7 @@ const statusColors: Record<string, "success" | "warning" | "error" | "info" | "p
   "non payée": "error",
   "en attente": "warning",
   "rappel envoyé": "info",
-  "facture prête": "primary", // Nouvelle couleur pour le statut
+  "facture prête": "primary",
 };
 
 const statusTabs = [
@@ -49,14 +50,15 @@ const statusTabs = [
   "non payée",
   "en attente",
   "rappel envoyé",
-  "facture prête", 
+  "facture prête",
 ];
 
 export default function FacturesPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
-  const [viewModalOpen, setViewModalOpen] = useState(false); // Etat pour le modal de visualisation
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleEditClick = (facture: Invoice) => {
     setSelectedInvoice(facture);
@@ -64,19 +66,16 @@ export default function FacturesPage() {
   };
 
   const handleSaveInvoice = (updated: Invoice) => {
-    // Simule la mise à jour dans le tableau
     const index = fakeInvoices.findIndex((f) => f.id === updated.id);
     if (index !== -1) {
       fakeInvoices[index] = updated;
     }
-    // Ici tu peux ajouter une requête API pour mettre à jour la facture
   };
 
   const handleSendInvoice = (facture: Invoice) => {
-    // Ici tu peux changer le statut ou effectuer l'action d'envoi
     const index = fakeInvoices.findIndex((f) => f.id === facture.id);
     if (index !== -1) {
-      fakeInvoices[index].status = "en attente"; 
+      fakeInvoices[index].status = "en attente";
       console.log(`Facture envoyée à ${facture.client}`);
     }
   };
@@ -90,9 +89,14 @@ export default function FacturesPage() {
     ? fakeInvoices
     : fakeInvoices.filter((facture) => facture.status === statusTabs[activeTab]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <>
-      <Box sx={{height: '100vh'}}>
+      <Box sx={{ height: '100vh' }}>
         <Typography variant="h5" sx={{ mb: 2, color: "text.secondary" }}>
           Gestion des Factures
         </Typography>
@@ -119,10 +123,30 @@ export default function FacturesPage() {
 
         <Card sx={{ borderRadius: 2, height: '600px' }}>
           <CardContent>
-            {filteredInvoices.length === 0 ? (
-              <Typography sx={{ color: "text.secondary" }}>
-                Aucune facture trouvée.
-              </Typography>
+            {loading ? (
+              // Affichage de Skeletons pendant le chargement
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell><Skeleton sx={{ bgcolor: "primary.light" }} /></TableCell>
+                    <TableCell><Skeleton sx={{ bgcolor: "primary.light" }} /></TableCell>
+                    <TableCell><Skeleton sx={{ bgcolor: "primary.light" }} /></TableCell>
+                    <TableCell align="right"><Skeleton sx={{ bgcolor: "primary.light" }} /></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton width="80%" sx={{ bgcolor: "primary.light" }} /></TableCell>
+                      <TableCell><Skeleton width="40%" sx={{ bgcolor: "primary.light" }} /></TableCell>
+                      <TableCell><Skeleton width="60%" sx={{ bgcolor: "primary.light" }} /></TableCell>
+                      <TableCell align="right"><Skeleton width="80%" sx={{ bgcolor: "primary.light" }} /></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : filteredInvoices.length === 0 ? (
+              <Typography sx={{ color: "black" }}>Aucune facture trouvée.</Typography>
             ) : (
               <Table>
                 <TableHead>
@@ -130,20 +154,14 @@ export default function FacturesPage() {
                     <TableCell sx={{ color: "text.secondary" }}>Client</TableCell>
                     <TableCell sx={{ color: "text.secondary" }}>Montant</TableCell>
                     <TableCell sx={{ color: "text.secondary" }}>Statut</TableCell>
-                    <TableCell align="right" sx={{ color: "text.secondary" }}>
-                      Actions
-                    </TableCell>
+                    <TableCell align="right" sx={{ color: "text.secondary" }}>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {filteredInvoices.map((facture) => (
                     <TableRow key={facture.id}>
-                      <TableCell sx={{ color: "text.secondary" }}>
-                        {facture.client}
-                      </TableCell>
-                      <TableCell sx={{ color: "text.secondary" }}>
-                        {facture.amount} €
-                      </TableCell>
+                      <TableCell sx={{ color: "black" }}>{facture.client}</TableCell>
+                      <TableCell sx={{ color: "black" }}>{facture.amount} €</TableCell>
                       <TableCell>
                         <Chip
                           label={facture.status}
@@ -158,7 +176,7 @@ export default function FacturesPage() {
                             variant="outlined"
                             color="primary"
                             startIcon={<VisibilityIcon />}
-                            onClick={() => handleViewClick(facture)} // Ouvrir le modal
+                            onClick={() => handleViewClick(facture)}
                           >
                             Voir
                           </Button>
@@ -178,7 +196,7 @@ export default function FacturesPage() {
                               size="small"
                               variant="contained"
                               color="success"
-                              onClick={() => handleSendInvoice(facture)} // Action d'envoi
+                              onClick={() => handleSendInvoice(facture)}
                             >
                               Envoyer Facture
                             </Button>
@@ -194,10 +212,10 @@ export default function FacturesPage() {
         </Card>
       </Box>
 
-      {/* Modal pour voir les détails de la facture */}
-      <Dialog open={viewModalOpen} onClose={() => setViewModalOpen(false)} >
-        <DialogTitle sx={{ color: "text.secondary" }}>Détails de la Facture</DialogTitle>
-        <DialogContent sx={{ color: "text.secondary" }}>
+      {/* Modals */}
+      <Dialog open={viewModalOpen} onClose={() => setViewModalOpen(false)}>
+        <DialogTitle sx={{ color: "black" }}>Détails de la Facture</DialogTitle>
+        <DialogContent sx={{ color: "black" }}>
           {selectedInvoice && (
             <>
               <Typography variant="h6">Client: {selectedInvoice.client}</Typography>
@@ -213,12 +231,12 @@ export default function FacturesPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
       <InvoiceShowModal
         open={viewModalOpen}
         onClose={() => setViewModalOpen(false)}
         invoice={selectedInvoice}
       />
-      {/* Modal pour l'édition de la facture */}
       <InvoiceEditModal
         open={editModalOpen}
         onClose={() => setEditModalOpen(false)}

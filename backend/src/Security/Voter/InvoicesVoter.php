@@ -13,7 +13,12 @@ final class InvoicesVoter extends Voter
     const EDIT = 'invoice_edit';
     const VIEW = 'invoice_view';
     const CREATE = 'invoice_create';
-
+    const DELETE = 'invoice_delete';
+    const LIST = 'invoice_list';
+    const EXPORT = 'invoice_export';
+    const IMPORT = 'invoice_import';
+    const DOWNLOAD = 'invoice_download';
+    const PRINT = 'invoice_print';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
@@ -45,6 +50,13 @@ final class InvoicesVoter extends Voter
         return match($subject) {
             self::EDIT => $this->canEdit($invoices, $user),
             self::VIEW => $this->canView($invoices, $user),
+            self::CREATE => $this->canCreate($invoices, $user),
+            self::DELETE => $this->canDelete($invoices, $user),
+            self::LIST => $this->canList($invoices, $user),
+            self::EXPORT => $this->canExport($invoices, $user),
+            self::IMPORT => $this->canImport($invoices, $user),
+            self::DOWNLOAD => $this->canDownload($invoices, $user),
+            self::PRINT => $this->canPrint($invoices, $user),
             default => throw new \LogicException('This code should not be reached!')
         };
 
@@ -52,19 +64,51 @@ final class InvoicesVoter extends Voter
 
     private function canEdit(Invoices $invoices, User $user): bool
     {
-        return $user === $this->getUser();
+        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
     }
     private function canView(Invoices $invoices, User $user): bool
     {
-        return $user === $this->getUser();
+        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
     }
+
+    private function canCreate(Invoices $invoices, User $user): bool
+    {
+        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
+    }
+
+    private function canDelete(Invoices $invoices, User $user): bool
+    {
+        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
+    }
+
+    private function canList(Invoices $invoices, User $user): bool
+    {
+        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
+    }
+
+    private function canExport(Invoices $invoices, User $user): bool
+    {
+        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
+    }
+
+    private function canImport(Invoices $invoices, User $user): bool
+    {
+        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
+    }
+
+    private function canPrint(Invoices $invoices, User $user): bool
+    {
+        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
+    }
+
+    private function canDownload(Invoices $invoices, User $user): bool
+    {
+        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
+    }
+
     private function getUser(): User
     {
         return $this->getUser();
     }
 
-
-    // private function canEdit(Invoices $invoices, User $user) {
-    //     return $user === $this->getUser();
-    // }
 }

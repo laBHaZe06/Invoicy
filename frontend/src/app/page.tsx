@@ -6,10 +6,13 @@ import FooterComponent from "@/components/Footer/FooterComponent";
 import Box from "@mui/material/Box";
 import Hero from "@/components/Hero/Hero";
 import Alert from "@mui/material/Alert";
+import CloseIcon from "@mui/icons-material/Close";
+import { IconButton } from "@mui/material";
 
 export default function Page() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
+  const [open, setOpen] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -37,10 +40,25 @@ export default function Page() {
     <div>
       <NavBarComponent />
       <Box sx={{ mt: 5 }}>
-        {isLoggedIn && (
-          <Alert severity="success" sx={{ mb: 3 }}>
-            Bienvenue, {username} ! Vous êtes connecté.
-          </Alert>
+        {isLoggedIn && open && (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 10, mb: 3 }}>
+            <Alert
+              severity="success"
+              sx={{ width: "100%", maxWidth: "500px",zIndex: 5, position: 'relative', marginTop: 8 }}
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => setOpen(false)}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+            >
+              Bienvenue, {username} ! Vous êtes connecté.
+            </Alert>
+          </Box>
         )}
         <Hero />
         <FooterComponent />

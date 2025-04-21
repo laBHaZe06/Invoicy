@@ -1,31 +1,29 @@
 <?php
-
-namespace App\State;
+namespace App\State\Invoice;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Dto\Invoice\InvoiceOutput;
-use App\Entity\Invoices;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
+use App\Dto\Invoice\InvoicesDto;
+use App\Repository\InvoicesRepository;
 
-final class InvoiceProvider implements ProviderInterface
+class InvoiceProvider implements ProviderInterface
 {
-    public function __construct(private EntityManagerInterface $entityManager, private Security $security) {}
+    public function __construct(private InvoicesRepository $repo) {}
 
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ?InvoicesDto
     {
-        $user = $this->security->getUser();
-        $invoices = $this->entityManager->getRepository(Invoices::class)->findBy(['owner' => $user]);
+        $invoice = $this->repo->find($uriVariables['id'] ?? null);
 
-        return array_map(fn(Invoices $invoice) => new InvoiceOutput(
-            id: $invoice->getId(),
-            invoiceNumber: $invoice->getInvoiceNumber(),
-            createdAt: $invoice->getCreatedAt(),
-            amountHt: $invoice->getAmountHt(),
-            amountTtc: $invoice->getAmountTtc(),
-            description: $invoice->getDescription(),
-            clientId: $invoice->getClient()?->getId()
-        ), $invoices);
+        if (!$invoice) {
+            return null;
+        }
+
+        return new InvoicesDto(
+            $invoice->getId(),
+            $invoice->getInvoiceNumber(),
+            $invoice->getAmountHt(),
+            $invoice->getAmountTtc(),
+            $invoice->getDescription()
+        );
     }
 }

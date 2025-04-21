@@ -2,68 +2,85 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
-#[Route(path: '/api')]
+#[Route('/api')]
 class AuthController extends AbstractController
-{ public function __construct(private Security $security)
-    {
-        $this->security = $security;
-    }
+{
+    public function __construct(
+        private readonly Security $security
+    ) {}
 
-    #[Route(path: '/login_check', name: 'app_login', methods: ['POST'])]
-    public function login(AuthenticationUtils $authenticationUtils, Request $request): JsonResponse
-    {
+    #[Route('/login', name: 'app_login', methods: ['POST'])]
+    public function login(
+        #[CurrentUser] ?User $user,
+        JWTTokenManagerInterface $jwtManager
+    ): JsonResponse {
         
-        $error = $authenticationUtils->getLastAuthenticationError();
-        $isAuth = $this->security->getUser() !== null;
-        
-        $cookie = $request->cookies->get('token');
-        
-    
-        return new JsonResponse([
-            'isAuthenticated' => $isAuth,
-            'error' => $error,
-            'token' => $cookie,
+        if (!$user) {
+            return new JsonResponse(['error' => 'Invalid credentials.'], 401);
+        }
+
+        $token = $jwtManager->create($user);
+
+        $response = new JsonResponse([
+            'message' => 'Authenticated successfully',
+            'user' => [
+                'email' => $user->getEmail(),
+                'roles' => $user->getRoles()
+            ]
         ]);
 
+        // 🧁 Création du cookie sécurisé contenant le token JWT
+        $cookie = Cookie::create('BEARER')
+            ->withValue($token)
+            ->withHttpOnly(true)
+            ->withSecure(false) // passe à true en production (HTTPS)
+            ->withSameSite('Strict')
+            ->withPath('/')
+            ->withExpires(time() + 3600); // 1h de durée
+
+        $response->headers->setCookie($cookie);
+
+        return $response;
     }
 
-
-    #[Route(path: '/profile', name: 'app_profile', methods: ['GET'])]
+    #[Route('/profile', name: 'app_profile', methods: ['GET'])]
     public function profile(): JsonResponse
     {
         $user = $this->security->getUser();
-    
+
         if (!$user) {
             return $this->json(['error' => 'Non authentifié'], 403);
         }
-    
+
         return $this->json([
             'user' => [
                 'email' => $user->getUserIdentifier(),
                 'roles' => $user->getRoles(),
             ],
-            'token' => $this->security->getToken() ? $this->security->getToken()->getUserIdentifier() : null,
         ]);
     }
 
-
-    #[Route(path: '/logout', name: 'app_logout', methods: ['POST', 'GET'])]
-    public function logout(): void
+    #[Route('/logout', name: 'app_logout', methods: ['POST', 'GET'])]
+    public function logout(): JsonResponse
     {
-        $cookie = new Cookie('user_token', null, time() - 3600, '/', null, false, true);
         $response = new JsonResponse([
-            'token' => null,
+            'message' => 'Déconnexion effectuée',
         ]);
-        $response->headers->setCookie($cookie);
-        $response->send();
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+
+        // Supprimer le cookie JWT
+        $response->headers->clearCookie('BEARER', '/', null, false, true, 'Strict');
+
+        return $response;
     }
 }

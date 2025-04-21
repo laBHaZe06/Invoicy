@@ -66,21 +66,25 @@ const ConnectComponent: React.FC = () => {
     setErrorMessage("");
     setSuccessMessage("");
 
+    const endpoint = isRegister ? "/register" : "/login";
+    const payload = isRegister
+    ? { email, password, confirmPassword, firstName, lastName, statut, siren, siret, capital_social, num_rcs, acceptTerms }
+    : { username: email, password };
+    
     try {
-      const endpoint = isRegister ? "/register" : "/login_check";
-      const payload = isRegister
-        ? { email, password, confirmPassword, firstName, lastName, statut, siren, siret, capital_social, num_rcs, acceptTerms }
-        : { username: email, password };
 
-      const response = await fetch(`${process.env.API_URL}${endpoint}`, {
+      const response = await fetch(`http://localhost:8000/api${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
       const data = await response.json();
+      console.info(response.status);
+      console.info(data);
 
       if (response.status !== 200 && response.status !== 201) throw new Error(`HTTP error! status: ${response.status}`);
 
