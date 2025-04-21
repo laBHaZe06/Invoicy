@@ -43,7 +43,7 @@ jobs:
             cd backend
             ./vendor/bin/php-cs-fixer fix tests 
             ./vendor/bin/php-cs-fixer fix src
-            ./vendor/bin/phpunit --testdox --colors=always
+            ./vendor/bin/phpunit --colors=always
 
   test_frontend:
     executor: node-executor
