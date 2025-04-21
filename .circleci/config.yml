@@ -12,6 +12,7 @@ executors:
     working_directory: ~/repo
 
 services:
+  # Service MySQL avec les mêmes variables d'environnement que dans ton docker-compose
   mysql:
     image: mysql:5.7
     environment:
@@ -56,6 +57,11 @@ jobs:
     executor: php-node-executor
     steps:
       - checkout
+      - run:
+          name: Installer le client MySQL
+          command: |
+            apt-get update
+            apt-get install -y mysql-client
       - run:
           name: Vérifier si la base de données est prête
           command: |
