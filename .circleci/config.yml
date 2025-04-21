@@ -1,20 +1,17 @@
-version: 2.
+version: 2.1
 
 jobs:
+  # Job pour tester le backend Symfony
   test_backend:
     docker:
       - image: cimg/php:8.2-node  # Utiliser une image PHP avec Node
     environment:
       SKIP_PASSWORD_WARMER: 1
-    # working_directory: ./backend  # On définit ici le répertoire de travail par défaut
     steps:
       - checkout
       - run:
           name: Vérifier le contenu du dépôt après checkout
           command: ls -lR 
-      - run:
-          name: Vérifier le contenu du dépôt
-          command: ls -l 
       - run:
           name: Vérifier le contenu du dossier backend
           command: ls -l backend # Vérifie que le répertoire backend est bien là
@@ -32,12 +29,19 @@ jobs:
             cd backend
             ./vendor/bin/php-cs-fixer fix tests 
             ./vendor/bin/php-cs-fixer fix src
+      - run:
+          name: Lancer les tests fonctionnels Symfony
+          command: |
+            cd backend
+            php bin/console cache:clear
+            php bin/console doctrine:migrations:migrate --no-interaction
+            php bin/console lint:twig
+            php bin/console lint:yaml
 
   # Job pour tester le frontend Next.js
   test_frontend:
     docker:
       - image: cimg/node:20.17.0
-    # working_directory: ./frontend  # On définit ici le répertoire de travail par défaut
     steps:
       - checkout
       - run:
@@ -52,30 +56,18 @@ jobs:
             cd frontend
             npm install
             npm audit fix
-            
       - run:
           name: Exécuter les tests Jest
           command: |
             cd frontend
             npm run test
 
-
-
-  #Job pour construire le backend Symfony
+  # Job pour construire le backend Symfony
   build_backend:
     docker:
       - image: cimg/php:8.2-node
     steps:
       - checkout
-      - run:
-          name: Vérifier le contenu du dépôt après checkout
-          command: ls -lR
-      - run:
-          name: Allez dans le répertoire backend
-          command: cd backend
-      - run:
-          name: Générer le fichier .env
-          command: cp backend/.env.local backend/.env
       - run:
           name: Installer les dépendances Composer
           command: |
@@ -86,14 +78,9 @@ jobs:
           command: |
             cd backend
             php bin/console cache:clear
-      - run:
-          name: Exécuter l'application Symfony
-          command: |
-            cd backend
-            php -S 0.0.0.0:8000 -t public
+            php bin/console doctrine:migrations:migrate --no-interaction
 
-
-  #Job pour construire le frontend Next.js
+  # Job pour construire le frontend Next.js
   build_frontend:
     docker:
       - image: cimg/node:20.17.0
@@ -109,7 +96,6 @@ jobs:
           command: |
             cd frontend
             npm run build
-
 
 workflows:
   version: 2
