@@ -12,7 +12,6 @@ executors:
     working_directory: ~/repo
 
 services:
-  # Service MySQL avec les mêmes variables d'environnement que dans ton docker-compose
   mysql:
     image: mysql:5.7
     environment:
@@ -65,10 +64,11 @@ jobs:
       - run:
           name: Vérifier si la base de données est prête
           command: |
-            until mysql -h 127.0.0.1 -u root -proot -e "SHOW DATABASES;"; do
+            until mysql -h 127.0.0.1 -u root -proot -e "SHOW DATABASES;" 2>/dev/null; do
               echo "Attente de MySQL..."
-              sleep 2
+              sleep 5
             done
+            echo "MySQL est prêt !"
       - run:
           name: Installer les dépendances Composer
           command: |
