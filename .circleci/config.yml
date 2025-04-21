@@ -90,7 +90,7 @@ jobs:
           name: Exécuter l'application Symfony
           command: |
             cd backend
-            php bin/console serve
+            php -S 0.0.0.0:8000 -t public
 
 
   #Job pour construire le frontend Next.js
