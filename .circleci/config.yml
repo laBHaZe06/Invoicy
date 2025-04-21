@@ -1,20 +1,27 @@
 version: 2.1
 
-jobs:
-  # Job pour tester le backend Symfony
-  test_backend:
+executors:
+  php-node-executor:
     docker:
-      - image: cimg/php:8.2-node  # Utiliser une image PHP avec Node
-    environment:
-      SKIP_PASSWORD_WARMER: 1
+      - image: cimg/php:8.2-node
+    working_directory: ~/repo
+
+  node-executor:
+    docker:
+      - image: cimg/node:20.17.0
+    working_directory: ~/repo
+
+jobs:
+  test_backend:
+    executor: php-node-executor
     steps:
       - checkout
       - run:
           name: Vérifier le contenu du dépôt après checkout
-          command: ls -lR 
+          command: ls -lR
       - run:
           name: Vérifier le contenu du dossier backend
-          command: ls -l backend # Vérifie que le répertoire backend est bien là
+          command: ls -l backend
       - run:
           name: Générer le fichier .env
           command: cp backend/.env.local backend/.env
@@ -27,7 +34,7 @@ jobs:
           name: Exécuter les tests PHPUnit
           command: |
             cd backend
-            ./vendor/bin/php-cs-fixer fix tests 
+            ./vendor/bin/php-cs-fixer fix tests
             ./vendor/bin/php-cs-fixer fix src
       - run:
           name: Lancer les tests fonctionnels Symfony
@@ -38,18 +45,16 @@ jobs:
             php bin/console lint:twig
             php bin/console lint:yaml
 
-  # Job pour tester le frontend Next.js
   test_frontend:
-    docker:
-      - image: cimg/node:20.17.0
+    executor: node-executor
     steps:
       - checkout
       - run:
           name: Vérifier le contenu du dépôt après checkout
-          command: ls -lR 
+          command: ls -lR
       - run:
           name: Vérifier le contenu du frontend
-          command: ls -l frontend # Vérifie que le répertoire frontend est bien là
+          command: ls -l frontend
       - run:
           name: Installer les dépendances Node.js
           command: |
@@ -62,10 +67,8 @@ jobs:
             cd frontend
             npm run test
 
-  # Job pour construire le backend Symfony
   build_backend:
-    docker:
-      - image: cimg/php:8.2-node
+    executor: php-node-executor
     steps:
       - checkout
       - run:
@@ -80,10 +83,8 @@ jobs:
             php bin/console cache:clear
             php bin/console doctrine:migrations:migrate --no-interaction
 
-  # Job pour construire le frontend Next.js
   build_frontend:
-    docker:
-      - image: cimg/node:20.17.0
+    executor: node-executor
     steps:
       - checkout
       - run:
