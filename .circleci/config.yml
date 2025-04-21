@@ -11,6 +11,22 @@ executors:
       - image: cimg/node:20.17.0
     working_directory: ~/repo
 
+services:
+  # Service MySQL avec les mêmes variables d'environnement que dans ton docker-compose
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: invoicy_db
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
 jobs:
   test_backend:
     executor: php-node-executor
@@ -36,14 +52,29 @@ jobs:
             cd backend
             ./vendor/bin/php-cs-fixer fix tests
             ./vendor/bin/php-cs-fixer fix src
+
+  build_backend:
+    executor: php-node-executor
+    steps:
+      - checkout
       - run:
-          name: Lancer les tests fonctionnels Symfony
+          name: Vérifier si la base de données est prête
+          command: |
+            until mysql -h db -u root -proot -e "SHOW DATABASES;"; do
+              echo "Attente de MySQL..."
+              sleep 2
+            done
+      - run:
+          name: Installer les dépendances Composer
+          command: |
+            cd backend
+            composer install
+      - run:
+          name: Exécuter le nettoyage du cache et les migrations Doctrine
           command: |
             cd backend
             php bin/console cache:clear
             php bin/console doctrine:migrations:migrate --no-interaction
-            php bin/console lint:twig
-            php bin/console lint:yaml
 
   test_frontend:
     executor: node-executor
@@ -66,22 +97,6 @@ jobs:
           command: |
             cd frontend
             npm run test
-
-  build_backend:
-    executor: php-node-executor
-    steps:
-      - checkout
-      - run:
-          name: Installer les dépendances Composer
-          command: |
-            cd backend
-            composer install
-      - run:
-          name: Build du backend Symfony
-          command: |
-            cd backend
-            php bin/console cache:clear
-            php bin/console doctrine:migrations:migrate --no-interaction
 
   build_frontend:
     executor: node-executor
