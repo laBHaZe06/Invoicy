@@ -32,7 +32,7 @@ describe("ConnectComponent", () => {
   it("renders a form", () => {
     render(<ConnectComponent />);
     
-    const form = screen.getByRole("form"); // ou getByTestId("connect-form")
+    const form = screen.getByTestId("connect-form"); // ou getByTestId("connect-form")
     expect(form).toBeDefined();
 
     expect(screen.getByLabelText(/email/i)).toBeDefined();
