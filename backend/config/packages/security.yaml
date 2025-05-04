@@ -9,42 +9,53 @@ security:
                 property: email
 
     firewalls:
-        cors_preflight:  # <<< Ce bloc doit être en premier !
-            pattern: ^/api/
-            methods: [OPTIONS]
-            security: false
+        # cors_preflight:  # <<< Ce bloc doit être en premier !
+        #     pattern: ^/api/
+        #     methods: [OPTIONS]
+        #     security: false
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
         # Authentification via ton custom authenticator
         api_login:
-            pattern: ^/api/login
+            pattern: ^/api/login_check
             stateless: true
-            custom_authenticator: App\Security\Login\LoginAuthenticator
             provider: app_user_provider
+            custom_authenticator: App\Security\Authenticator\LoginAuthenticator
 
         # Le reste des routes API protégées par JWT
         api:
             pattern: ^/api
             stateless: true
-            jwt: ~
             provider: app_user_provider
+            custom_authenticator: App\Security\Authenticator\JwtCookieAuthenticator
 
         main:
             lazy: true
             provider: app_user_provider
+            jwt: ~
+            json_login:
+                check_path: /api/login_check # The name in routes.yaml is enough for mapping
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
     role_hierarchy:
         ROLE_PUBLIC: [PUBLIC_ACCESS ]
-        ROLE_USER: [ROLE_PUBLIC]
-        ROLE_ADMIN: [ROLE_USER]
+        ROLE_USER: [ROLE_USER]
+        ROLE_ADMIN: [ROLE_ADMIN]
         ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 
     access_control:
-        - { path: ^/$, roles: PUBLIC_ACCESS }
-        - { path: ^/api/login, roles:  IS_AUTHENTICATED_ANONYMOUSLY}
-        - { path: ^/api/register, roles:  IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/profile, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api/logout, roles: IS_AUTHENTICATED_FULLY  }
-        - { path: ^/api/verif, roles:  IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: ^/api/logout, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/verif, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/invoices, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/geocode, roles: IS_AUTHENTICATED_FULLY  }
+        - { path: ^/api/invoices/\d+, roles: ROLE_USER }
+        - { path: ^/api/invoice-template/\d+, roles: ROLE_USER }
+

@@ -1,40 +1,42 @@
 <?php
 
-namespace App\Security\Login;
+namespace App\Security\Authenticator;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
-use Symfony\Component\HttpFoundation\Response;
 
 class LoginAuthenticator extends AbstractAuthenticator
 {
     public function __construct(
         private EntityManagerInterface $em,
         private UserPasswordHasherInterface $passwordHasher,
-        private JWTTokenManagerInterface $jwtManager
-    ) {}
+        private JWTTokenManagerInterface $jwtManager,
+    ) {
+    }
 
     public function supports(Request $request): ?bool
     {
-        return $request->getPathInfo() === '/api/login' && $request->isMethod('POST');
+        return '/api/login_check' === $request->getPathInfo() && $request->isMethod('POST');
     }
 
     public function authenticate(Request $request): Passport
     {
         $data = json_decode($request->getContent(), true);
-        error_log('AUTH LOGIN REQUEST: ' . json_encode($data));
-        $email = $data['username'] ?? '';
+        // error_log('AUTH LOGIN REQUEST: ' . json_encode($data));
+        $email = $data['email'] ?? '';
         $password = $data['password'] ?? '';
 
         if (!$email || !$password) {
@@ -58,21 +60,32 @@ class LoginAuthenticator extends AbstractAuthenticator
             'token' => $jwt,
             'user' => [
                 'email' => $user->getUserIdentifier(),
-                'roles' => $user->getRoles()
-            ]
+                'roles' => $user->getRoles(),
+            ],
         ]);
 
+        $cookie = Cookie::create('BEARER')
+        ->withValue($jwt)
+        ->withSecure('prod' === $_ENV['APP_ENV'])
+        ->withHttpOnly(true)
+        ->withPath('/')
+        ->withSameSite('Lax');
+
+        $response->headers->setCookie($cookie);
+
         $this->addCorsHeaders($response, $request);
+
         return $response;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse
     {
         $response = new JsonResponse([
-            'error' => 'Email ou mot de passe incorrect.'
+            'error' => 'Email ou mot de passe incorrect.',
         ], Response::HTTP_UNAUTHORIZED);
 
         $this->addCorsHeaders($response, $request);
+
         return $response;
     }
 

@@ -1,8 +1,9 @@
 <?php
+
 namespace App\EventListener;
 
-use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class CorsErrorListener
@@ -26,7 +27,7 @@ class CorsErrorListener
         if ($exception instanceof HttpExceptionInterface) {
             $response->setStatusCode($exception->getStatusCode());
             $response->setContent(json_encode([
-                'error' => $exception->getMessage()
+                'error' => $exception->getMessage(),
             ]));
         } else {
             $response->setContent(json_encode([

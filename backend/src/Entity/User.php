@@ -5,9 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Controller\UsersController;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,15 +16,18 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     operations: [
-        new Get(security: "is_granted('ROLE_USER')"),
-        new Post(
-            name: 'utilisateur',
-            uriTemplate: '/utilisateur/{id}/profile',
-            controller: UsersController::class,
-            security: "is_granted('ROLE_USER')"
+        new Get(
+            security: "is_granted('view', object)",  // Utilisation du Voter ici
+            securityMessage: "You cannot view this user's profile."
         ),
-        new Put(security: "is_granted('ROLE_USER')"),
-        new Delete(security: "is_granted('ROLE_USER')"),
+        new Put(
+            security: "is_granted('edit', object)",  // Utilisation du Voter ici
+            securityMessage: "You cannot edit this user's profile."
+        ),
+        new Delete(
+            security: "is_granted('delete', object)",  // Utilisation du Voter ici
+            securityMessage: "You cannot delete this user's profile."
+        ),
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']]
@@ -98,15 +99,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $logo = null;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Invoices::class)]
+    private Collection $invoices;
+
     /**
      * @var Collection<int, InvoiceTemplate>
      */
-    #[ORM\OneToMany(targetEntity: InvoiceTemplate::class, mappedBy: 'owner')]
+    #[ORM\OneToMany(targetEntity: InvoiceTemplate::class, mappedBy: 'user')]
     private Collection $invoiceTemplates;
 
     public function __construct()
     {
         $this->invoiceTemplates = new ArrayCollection();
+        $this->invoices = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -328,7 +333,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->invoiceTemplates->contains($invoiceTemplate)) {
             $this->invoiceTemplates->add($invoiceTemplate);
-            $invoiceTemplate->setOwner($this);
+            $invoiceTemplate->setUser($this);
         }
 
         return $this;
@@ -338,11 +343,51 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->invoiceTemplates->removeElement($invoiceTemplate)) {
             // set the owning side to null (unless already changed)
-            if ($invoiceTemplate->getOwner() === $this) {
-                $invoiceTemplate->setOwner(null);
+            if ($invoiceTemplate->getUser() === $this) {
+                $invoiceTemplate->setUser(null);
             }
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Invoices>
+     */
+    public function getInvoices(): Collection
+    {
+        return $this->invoices;
+    }
+
+    public function addInvoice(Invoices $invoice): static
+    {
+        if (!$this->invoices->contains($invoice)) {
+            $this->invoices->add($invoice);
+            $invoice->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoice(Invoices $invoice): static
+    {
+        if ($this->invoices->removeElement($invoice)) {
+            // set the owning side to null (unless already changed)
+            if ($invoice->getUser() === $this) {
+                $invoice->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getFullName();
+    }
+
+    public function getFullName(): string
+    {
+        return $this->firstname.' '.$this->lastname;
     }
 }

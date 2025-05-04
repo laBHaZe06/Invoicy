@@ -23,10 +23,10 @@ const Lines: React.FC = () => {
   const theme = useTheme();
   const dotColor = theme.palette.mode === "dark" ? "#bc7de8" : "#5978fd";
 
-  const rows = 25;
-  const cols = 80;
+  const rows = 45;
+  const cols = 90;
   const dotSize = 4;
-  const spacing = 35;
+  const spacing = 25;
 
   return (
     <Box
@@ -75,7 +75,7 @@ const Lines: React.FC = () => {
       </Box>
     </Box>
   );
-// };
+
   // const theme = useTheme();
   // const stroke = theme.palette.mode === "dark" ? "rgba(126, 83, 196, 0.43)" : "rgba(85, 175, 211, 0.45)";
 

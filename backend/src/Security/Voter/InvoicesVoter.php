@@ -6,109 +6,66 @@ use App\Entity\Invoices;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 final class InvoicesVoter extends Voter
 {
-    const EDIT = 'invoice_edit';
-    const VIEW = 'invoice_view';
-    const CREATE = 'invoice_create';
-    const DELETE = 'invoice_delete';
-    const LIST = 'invoice_list';
-    const EXPORT = 'invoice_export';
-    const IMPORT = 'invoice_import';
-    const DOWNLOAD = 'invoice_download';
-    const PRINT = 'invoice_print';
+    public const EDIT = 'invoice_edit';
+    public const VIEW = 'invoice_view';
+    public const CREATE = 'invoice_create';
+    public const DELETE = 'invoice_delete';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if(!in_array($attribute, [self::EDIT, self::VIEW])) {
-            return false; 
-        }
-
-        if(!$subject instanceof Invoices) {
-            return false;
-        }
-
-        return true;
+        return in_array($attribute, [
+            self::EDIT,
+            self::VIEW,
+            self::CREATE,
+            self::DELETE,
+        ]) && $subject instanceof Invoices;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
-        $user = $token->getUserIdentifier();
-        // if the user is anonymous, do not grant access
-        if (!$user instanceof UserInterface) {
+        $user = $token->getUser();
+
+        if (!$user instanceof User) {
             return false;
         }
 
-        $invoices = $subject; 
-        // if the user is anonymous, do not grant access
-        if (!$invoices instanceof Invoices) {
-            return false;
-        }
-        
-        return match($subject) {
-            self::EDIT => $this->canEdit($invoices, $user),
-            self::VIEW => $this->canView($invoices, $user),
-            self::CREATE => $this->canCreate($invoices, $user),
-            self::DELETE => $this->canDelete($invoices, $user),
-            self::LIST => $this->canList($invoices, $user),
-            self::EXPORT => $this->canExport($invoices, $user),
-            self::IMPORT => $this->canImport($invoices, $user),
-            self::DOWNLOAD => $this->canDownload($invoices, $user),
-            self::PRINT => $this->canPrint($invoices, $user),
-            default => throw new \LogicException('This code should not be reached!')
+        /** @var Invoices $invoice */
+        $invoice = $subject;
+
+        return match ($attribute) {
+            self::EDIT => $this->canEdit($invoice, $user),
+            self::VIEW => $this->canView($invoice, $user),
+            self::CREATE => $this->canCreate($invoice, $user),
+            self::DELETE => $this->canDelete($invoice, $user),
+            default => throw new \LogicException('This code should not be reached!'),
         };
-
     }
 
-    private function canEdit(Invoices $invoices, User $user): bool
+    private function canEdit(Invoices $invoice, User $user): bool
     {
-        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
-    }
-    private function canView(Invoices $invoices, User $user): bool
-    {
-        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
+        return $this->hasAccess($user);
     }
 
-    private function canCreate(Invoices $invoices, User $user): bool
+    private function canView(Invoices $invoice, User $user): bool
     {
-        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
+        return $this->hasAccess($user);
     }
 
-    private function canDelete(Invoices $invoices, User $user): bool
+    private function canCreate(Invoices $invoice, User $user): bool
     {
-        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
+        return $this->hasAccess($user);
     }
 
-    private function canList(Invoices $invoices, User $user): bool
+    private function canDelete(Invoices $invoice, User $user): bool
     {
-        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
+        return $this->hasAccess($user);
     }
 
-    private function canExport(Invoices $invoices, User $user): bool
+    private function hasAccess(User $user): bool
     {
-        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
+        return in_array('ROLE_USER', $user->getRoles()) || in_array('ROLE_ADMIN', $user->getRoles());
     }
-
-    private function canImport(Invoices $invoices, User $user): bool
-    {
-        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
-    }
-
-    private function canPrint(Invoices $invoices, User $user): bool
-    {
-        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
-    }
-
-    private function canDownload(Invoices $invoices, User $user): bool
-    {
-        return $user === $this->getUser() && $user->getRoles() === ['ROLE_USER'];
-    }
-
-    private function getUser(): User
-    {
-        return $this->getUser();
-    }
-
 }

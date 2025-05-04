@@ -9,31 +9,25 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useState, useEffect } from "react";
-
-export type Invoice = {
-  id: number;
-  client: string;
-  amount: number;
-  status: "payée" | "non payée" | "en attente" | "rappel envoyé" | "facture prête";
-};
+import { Invoices } from "@/type/Invoices";
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  invoice: Invoice | null;
-  onSave: (updated: Invoice) => void;
+  invoices: Invoices | null;
+  onSave: (updated: Invoices) => void;
 }
 
-export default function InvoiceEditModal({ open, onClose, invoice, onSave }: Props) {
-  const [formData, setFormData] = useState<Invoice | null>(null);
+export default function InvoicesEditModal({ open, onClose, invoices, onSave }: Props) {
+  const [formData, setFormData] = useState<Invoices | null>(null);
 
   useEffect(() => {
-    if (invoice) {
-      setFormData(invoice);
+    if (invoices) {
+      setFormData(invoices);
     }
-  }, [invoice]);
+  }, [invoices]);
 
-  const handleChange = (field: keyof Invoice, value: string | number) => {
+  const handleChange = (field: keyof Invoices, value: string | number) => {
     if (formData) {
       setFormData({ ...formData, [field]: value });
     }
@@ -54,7 +48,7 @@ export default function InvoiceEditModal({ open, onClose, invoice, onSave }: Pro
       <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
         <TextField
           label="Nom du client"
-          value={formData.client}
+          value={formData?.client.lastName}
           onChange={(e) => handleChange("client", e.target.value)}
           fullWidth
           InputLabelProps={{ sx: { color: "text.secondary" } }}  // Label en text.secondary
@@ -64,8 +58,8 @@ export default function InvoiceEditModal({ open, onClose, invoice, onSave }: Pro
         <TextField
           label="Montant (€)"
           type="number"
-          value={formData.amount}
-          onChange={(e) => handleChange("amount", parseFloat(e.target.value))}
+          value={formData?.amountTtc}
+          onChange={(e) => handleChange("amountTtc", parseFloat(e.target.value))}
           fullWidth
           InputLabelProps={{ sx: { color: "text.secondary" } }}
           InputProps={{ sx: { color: "text.secondary" } }}
@@ -73,8 +67,8 @@ export default function InvoiceEditModal({ open, onClose, invoice, onSave }: Pro
         <TextField
           select
           label="Statut"
-          value={formData.status}
-          onChange={(e) => handleChange("status", e.target.value)}
+          value={formData?.statut}
+          onChange={(e) => handleChange("statut", e.target.value)}
           fullWidth
           InputLabelProps={{ sx: { color: "text.secondary" } }}
           InputProps={{ sx: { color: "text.secondary" } }}

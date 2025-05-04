@@ -63,7 +63,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", height: '100vh' }}>
         <CssBaseline />
 
         {/* AppBar */}

@@ -8,16 +8,16 @@ use Symfony\Component\Mailer\MailerInterface;
 class SendEmailService
 {
     public function __construct(private MailerInterface $mailer)
-    {}
+    {
+    }
 
     public function send(
         string $from,
         string $to,
         string $subject,
         string $template,
-        array $context
-    ): void
-    {
+        array $context,
+    ): void {
         // On crée le mail
         $email = (new TemplatedEmail())
             ->from($from)

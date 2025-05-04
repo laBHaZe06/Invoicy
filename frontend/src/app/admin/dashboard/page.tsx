@@ -4,28 +4,51 @@ import { useState, useEffect } from "react";
 import { Box, Card, CardContent, Typography, Skeleton } from "@mui/material";
 import BarChart from "@/components/ChartCard/BarChart";
 import ChartCard from "@/components/ChartCard/ChartCard";
-import { Invoice } from "@/components/Modal/InvoiceEditModal";
+import { Invoices } from "@/type/Invoices";
 
-const fakeInvoices: Invoice[] = [
-  { id: 1, client: "Jean Dupont", amount: 320, status: "payée" },
-  { id: 2, client: "Emma Durand", amount: 120, status: "en attente" },
-  { id: 3, client: "Paul Morel", amount: 380, status: "non payée" },
-  { id: 4, client: "Claire Martin", amount: 300, status: "rappel envoyé" },
-  { id: 5, client: "Luc Lefevre", amount: 210, status: "en attente" },
-  { id: 6, client: "Sophie Leroy", amount: 150, status: "facture prête" },
-];
+
 
 export default function DashboardPage() {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [invoices, setInvoices] = useState<Invoices[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setInvoices(fakeInvoices);
-      setLoading(false);
-    }, 1500); // Simulation d'une requête API
 
-    return () => clearTimeout(timer);
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      const response = await fetch(`${process.env.API_URL}/me/invoices`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: 'include',
+        }
+      );
+      console.info(response);
+      // console.info(localStorage.getItem("token"));
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des factures.");
+      }
+
+      const data = await response.json();
+      const allInvoices = data.map((invoice: Invoices) => ({
+        ...invoice,
+        client: {
+          ...invoice.client,
+          
+        },
+
+      }));
+
+      const timer = setTimeout(() => {
+        setInvoices(allInvoices);
+        setLoading(false);
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    };
+
+    fetchInvoices();
   }, []);
 
   return (
@@ -79,7 +102,7 @@ export default function DashboardPage() {
         <Box sx={{ flex: "1 1 60%", zIndex: 10 }}>
           <Card sx={{ borderRadius: 2 }}>
             <CardContent>
-              {loading ? <Skeleton variant="rectangular" height={250} sx={{ bgcolor: "primary.light" }} /> : <ChartCard />}
+              {loading ? <Skeleton variant="rectangular" height={250} sx={{ bgcolor: "primary.light" }} /> : <ChartCard invoices={invoices} />}
             </CardContent>
           </Card>
         </Box>

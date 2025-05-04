@@ -36,6 +36,12 @@ class Clients
     #[ORM\OneToMany(targetEntity: Invoices::class, mappedBy: 'client')]
     private Collection $invoices;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $country = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $town = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -132,6 +138,30 @@ class Clients
                 $invoice->setClient(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?string $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getTown(): ?string
+    {
+        return $this->town;
+    }
+
+    public function setTown(string $town): static
+    {
+        $this->town = $town;
 
         return $this;
     }

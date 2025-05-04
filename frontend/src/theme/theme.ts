@@ -23,6 +23,7 @@ export const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
           text: {
             primary: '#ffffff',
             secondary: '#CB9DF0',
+            
 
           },
           bg: {

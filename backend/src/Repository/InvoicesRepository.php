@@ -16,28 +16,17 @@ class InvoicesRepository extends ServiceEntityRepository
         parent::__construct($registry, Invoices::class);
     }
 
-    //    /**
-    //     * @return Invoices[] Returns an array of Invoices objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('i.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Récupère les factures d'un utilisateur avec les informations du client (ville, pays, etc.).
+     */
+    public function findInvoicesWithClientInfo($user)
+    {
+        $qb = $this->createQueryBuilder('i')
+            ->leftJoin('i.client', 'c')
+            ->addSelect('c')
+            ->where('i.user = :user')
+            ->setParameter('user', $user);
 
-    //    public function findOneBySomeField($value): ?Invoices
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $qb->getQuery()->getResult();
+    }
 }

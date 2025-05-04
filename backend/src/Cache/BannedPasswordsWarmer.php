@@ -18,14 +18,14 @@ class BannedPasswordsWarmer implements CacheWarmerInterface
 
     public function isOptional(): bool
     {
-        return $_ENV['APP_ENV'] === 'test' || $_ENV['APP_ENV'] === 'ci';
+        return 'test' === $_ENV['APP_ENV'] || 'ci' === $_ENV['APP_ENV'];
     }
 
     public function warmUp(string $cacheDir, ?string $buildDir = null): array
     {
         $this->deleteCacheItem('banned_passwords');
-        $filePath = $this->projectDir . '/wordList/rockyou.txt';
-        if (!file_exists($filePath) || getenv('SKIP_PASSWORD_WARMER') === '1') {
+        $filePath = $this->projectDir.'/wordList/rockyou.txt';
+        if (!file_exists($filePath) || '1' === getenv('SKIP_PASSWORD_WARMER')) {
             return [];
         }
         $bannedPasswords = [];
@@ -33,7 +33,7 @@ class BannedPasswordsWarmer implements CacheWarmerInterface
             while (($line = fgets($handle)) !== false) {
                 $bannedPasswords[] = trim($line);
             }
-            
+
             fclose($handle);
         } else {
             throw new \RuntimeException('Impossible d\'ouvrir le fichier rockyou.txt.');
@@ -46,11 +46,9 @@ class BannedPasswordsWarmer implements CacheWarmerInterface
         return [];
     }
 
-
-    //delete cache before warming up
+    // delete cache before warming up
     public function deleteCacheItem($key): bool
     {
         return $this->cachePool->deleteItem($key);
     }
-
 }

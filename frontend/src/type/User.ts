@@ -1,5 +1,6 @@
 
 export type User = {
+    id: number;
     firstName: string;
     lastName: string;
     username: string;
@@ -11,4 +12,5 @@ export type User = {
     capital_social: string;
     createdAt: string;
     updatedAt: string;
+    logo: string;
 };

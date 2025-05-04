@@ -1,0 +1,632 @@
+[
+    {
+        "name": "France",
+        "native": "France",
+        "translations": {
+        "fr": "France",
+        "en": "France"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Paris",
+                "latitude": 48.8566,
+                "longitude": 2.3522
+            },
+            {
+                "name": "Lyon",
+                "latitude": 45.75,
+                "longitude": 4.85
+            },
+            {
+                "name": "Marseille",
+                "latitude": 43.2965,
+                "longitude": 5.3698
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Italy",
+        "native": "Italia",
+        "translations": {
+        "fr": "Italie",
+        "en": "Italy"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Rome",
+                "latitude": 41.9028,
+                "longitude": 12.4964
+            },
+            {
+                "name": "Milan",
+                "latitude": 45.4642,
+                "longitude": 9.19
+            },
+            {
+                "name": "Naples",
+                "latitude": 40.8518,
+                "longitude": 14.2681
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Suisse",
+        "native": "Schweiz",
+        "translations": {
+        "fr": "Suisse",
+        "en": "Switzerland"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Bern",
+                "latitude": 46.9481,
+                "longitude": 7.4474
+            },
+            {
+                "name": "Zurich",
+                "latitude": 47.3769,
+                "longitude": 8.5417
+            },
+            {
+                "name": "Geneva",
+                "latitude": 46.2044,
+                "longitude": 6.1432
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Belgique",
+        "native": "België",
+        "translations": {
+        "fr": "Belgique",
+        "en": "Belgium"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Brussels",
+                "latitude": 50.8503,
+                "longitude": 4.3517
+            },
+            {
+                "name": "Antwerp",
+                "latitude": 51.2194,
+                "longitude": 4.4025
+            },
+            {
+                "name": "Ghent",
+                "latitude": 51.0543,
+                "longitude": 3.7174
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Usa",
+        "native": "United States",
+        "translations": {
+        "fr": "États-Unis",
+        "en": "United States"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "New York",
+                "latitude": 40.7128,
+                "longitude": -74.006
+            },
+            {
+                "name": "San Francisco",
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "name": "Chicago",
+                "latitude": 41.8781,
+                "longitude": -87.6298
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Chine",
+        "native": "中国",
+        "translations": {
+        "fr": "Chine",
+        "en": "China"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Beijing",
+                "latitude": 39.9042,
+                "longitude": 116.4074
+            },
+            {
+                "name": "Shanghai",
+                "latitude": 31.2304,
+                "longitude": 121.4737
+            },
+            {
+                "name": "Guangzhou",
+                "latitude": 23.1291,
+                "longitude": 113.2644
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Espagne",
+        "native": "España",
+        "translations": {
+        "fr": "Espagne",
+        "en": "Spain"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Madrid",
+                "latitude": 40.4168,
+                "longitude": -3.7038
+            },
+            {
+                "name": "Barcelona",
+                "latitude": 41.3851,
+                "longitude": 2.1734
+            },
+            {
+                "name": "Valencia",
+                "latitude": 39.4699,
+                "longitude": -0.3763
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Allemagne",
+        "native": "Deutschland",
+        "translations": {
+        "fr": "Allemagne",
+        "en": "Germany"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Berlin",
+                "latitude": 52.52,
+                "longitude": 13.405
+            },
+            {
+                "name": "Munich",
+                "latitude": 48.1351,
+                "longitude": 11.582
+            },
+            {
+                "name": "Hamburg",
+                "latitude": 53.5511,
+                "longitude": 9.9937
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Canada",
+        "native": "Canada",
+        "translations": {
+        "fr": "Canada",
+        "en": "Canada"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Toronto",
+                "latitude": 43.65107,
+                "longitude": -79.347015
+            },
+            {
+                "name": "Vancouver",
+                "latitude": 49.2827,
+                "longitude": -123.1207
+            },
+            {
+                "name": "Montreal",
+                "latitude": 45.5017,
+                "longitude": -73.5673
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Japon",
+        "native": "日本",
+        "translations": {
+        "fr": "Japon",
+        "en": "Japan"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Tokyo",
+                "latitude": 35.6895,
+                "longitude": 139.6917
+            },
+            {
+                "name": "Osaka",
+                "latitude": 34.6937,
+                "longitude": 135.5023
+            },
+            {
+                "name": "Kyoto",
+                "latitude": 35.0116,
+                "longitude": 135.7681
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Brésil",
+        "native": "Brasil",
+        "translations": {
+        "fr": "Brésil",
+        "en": "Brazil"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "São Paulo",
+                "latitude": -23.5505,
+                "longitude": -46.6333
+            },
+            {
+                "name": "Rio de Janeiro",
+                "latitude": -22.9068,
+                "longitude": -43.1729
+            },
+            {
+                "name": "Brasília",
+                "latitude": -15.7939,
+                "longitude": -47.8828
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Australie",
+        "native": "Australia",
+        "translations": {
+        "fr": "Australie",
+        "en": "Australia"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Sydney",
+                "latitude": -33.8688,
+                "longitude": 151.2093
+            },
+            {
+                "name": "Melbourne",
+                "latitude": -37.8136,
+                "longitude": 144.9631
+            },
+            {
+                "name": "Brisbane",
+                "latitude": -27.4698,
+                "longitude": 153.0251
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Inde",
+        "native": "भारत",
+        "translations": {
+        "fr": "Inde",
+        "en": "India"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Mumbai",
+                "latitude": 19.076,
+                "longitude": 72.8777
+            },
+            {
+                "name": "Delhi",
+                "latitude": 28.7041,
+                "longitude": 77.1025
+            },
+            {
+                "name": "Bangalore",
+                "latitude": 12.9716,
+                "longitude": 77.5946
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Russie",
+        "native": "Россия",
+        "translations": {
+        "fr": "Russie",
+        "en": "Russia"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Moscow",
+                "latitude": 55.7558,
+                "longitude": 37.6173
+            },
+            {
+                "name": "Saint Petersburg",
+                "latitude": 59.9311,
+                "longitude": 30.3609
+            },
+            {
+                "name": "Novosibirsk",
+                "latitude": 55.0084,
+                "longitude": 82.9357
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Royaume-Uni",
+        "native": "United Kingdom",
+        "translations": {
+        "fr": "Royaume-Uni",
+        "en": "United Kingdom"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "London",
+                "latitude": 51.5074,
+                "longitude": -0.1278
+            },
+            {
+                "name": "Manchester",
+                "latitude": 53.4808,
+                "longitude": -2.2426
+            },
+            {
+                "name": "Birmingham",
+                "latitude": 52.4862,
+                "longitude": -1.8904
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Mexique",
+        "native": "México",
+        "translations": {
+        "fr": "Mexique",
+        "en": "Mexico"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Mexico City",
+                "latitude": 19.4326,
+                "longitude": -99.1332
+            },
+            {
+                "name": "Guadalajara",
+                "latitude": 20.6597,
+                "longitude": -103.3496
+            },
+            {
+                "name": "Monterrey",
+                "latitude": 25.6866,
+                "longitude": -100.3161
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Pays-Bas",
+        "native": "Nederland",
+        "translations": {
+        "fr": "Pays-Bas",
+        "en": "Netherlands"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Amsterdam",
+                "latitude": 52.3676,
+                "longitude": 4.9041
+            },
+            {
+                "name": "Rotterdam",
+                "latitude": 51.9225,
+                "longitude": 4.4792
+            },
+            {
+                "name": "The Hague",
+                "latitude": 52.0705,
+                "longitude": 4.3007
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Turquie",
+        "native": "Türkiye",
+        "translations": {
+        "fr": "Turquie",
+        "en": "Turkey"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Istanbul",
+                "latitude": 41.0082,
+                "longitude": 28.9784
+            },
+            {
+                "name": "Ankara",
+                "latitude": 39.9208,
+                "longitude": 32.8541
+            },
+            {
+                "name": "Izmir",
+                "latitude": 38.4192,
+                "longitude": 27.1287
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Suède",
+        "native": "Sverige",
+        "translations": {
+        "fr": "Suède",
+        "en": "Sweden"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Stockholm",
+                "latitude": 59.3293,
+                "longitude": 18.0686
+            },
+            {
+                "name": "Gothenburg",
+                "latitude": 57.7089,
+                "longitude": 11.9746
+            },
+            {
+                "name": "Malmö",
+                "latitude": 55.605,
+                "longitude": 13.0038
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Corée du Sud",
+        "native": "대한민국",
+        "translations": {
+        "fr": "Corée du Sud",
+        "en": "South Korea"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Seoul",
+                "latitude": 37.5665,
+                "longitude": 126.978
+            },
+            {
+                "name": "Busan",
+                "latitude": 35.1796,
+                "longitude": 129.0756
+            },
+            {
+                "name": "Incheon",
+                "latitude": 37.4563,
+                "longitude": 126.7052
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "Afrique du Sud",
+        "native": "South Africa",
+        "translations": {
+        "fr": "Afrique du Sud",
+        "en": "South Africa"
+        },
+        "states": [
+        {
+            "name": "Default",
+            "cities": [
+            {
+                "name": "Johannesburg",
+                "latitude": -26.2041,
+                "longitude": 28.0473
+            },
+            {
+                "name": "Cape Town",
+                "latitude": -33.9249,
+                "longitude": 18.4241
+            },
+            {
+                "name": "Durban",
+                "latitude": -29.8587,
+                "longitude": 31.0218
+            }
+            ]
+        }
+        ]
+    }
+]

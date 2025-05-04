@@ -19,17 +19,16 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
-
     public function __construct(
         private UserRepository $userRepository,
         private InvoiceTemplateRepository $invoiceTemplateRepository,
-        private InvoicesRepository $invoicesRepository
+        private InvoicesRepository $invoicesRepository,
     ) {
-        
         $this->userRepository = $userRepository;
         $this->invoiceTemplateRepository = $invoiceTemplateRepository;
         $this->invoicesRepository = $invoicesRepository;
     }
+
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {

@@ -3,57 +3,23 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
+// use ApiPlatform\Metadata\Delete;
+// use ApiPlatform\Metadata\Get;
+// use ApiPlatform\Metadata\Post;
+// use ApiPlatform\Metadata\Put;
 use App\Dto\Invoice\InvoicesDto;
 use App\Repository\InvoicesRepository;
-use App\State\Invoice\InvoiceProvider;
+use App\State\InvoiceProvider as StateInvoiceProvider;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
-    //use InvoiceDto class
-    operations: [
-        new Get(
-            security: "is_granted('ROLE_USER')",
-            normalizationContext: ['groups' => ['invoices:read']],
-            class: InvoicesDto::class,
-            provider: InvoiceProvider::class,
-        ),
-        new Post(
-            name: 'invoices',
-            class: InvoicesDto::class,
-            provider: InvoiceProvider::class,
-            uriTemplate: '/invoices/{id}/profile',
-            security: "is_granted('ROLE_USER')"
-        ),
-        new Put(
-            security: "is_granted('ROLE_USER')",
-            class: InvoicesDto::class,
-            provider: InvoiceProvider::class,
-            uriTemplate: '/invoices/{id}/profile',
-            normalizationContext: ['groups' => ['invoices:read']],
-            denormalizationContext: ['groups' => ['invoices:write']]
-        ),
-        new Delete(
-            security: "is_granted('ROLE_USER')",
-            class: InvoicesDto::class,
-            provider: InvoiceProvider::class,
-            uriTemplate: '/invoices/{id}/profile',
-            normalizationContext: ['groups' => ['invoices:read']],
-            denormalizationContext: ['groups' => ['invoices:write']]
-        ),
-    ],
-
     normalizationContext: ['groups' => ['invoices:read']],
     denormalizationContext: ['groups' => ['invoices:write']],
-    paginationClientItemsPerPage: true,
-    paginationItemsPerPage: 10,
-    paginationMaximumItemsPerPage: 100,
-    paginationClientEnabled: true,
+    input: InvoicesDto::class,
+    output: InvoicesDto::class,
+    provider: StateInvoiceProvider::class,
 )]
 #[ORM\Entity(repositoryClass: InvoicesRepository::class)]
 class Invoices
@@ -86,8 +52,11 @@ class Invoices
     #[Groups(['invoices:read'])]
     private ?Clients $client = null;
 
-    #[ORM\ManyToOne(inversedBy: 'invoices')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'invoices')]
     private ?User $user = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $statut = null;
 
     public function getId(): ?int
     {
@@ -174,6 +143,18 @@ class Invoices
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): static
+    {
+        $this->statut = $statut;
 
         return $this;
     }

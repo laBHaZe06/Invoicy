@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service;
 
 use App\Entity\User;
@@ -11,19 +12,21 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class RegistrationService
 {
-
     public function __construct(private UserRepository $userRepository,
-                                private UserPasswordHasherInterface $encoder,
-                                private EntityManagerInterface $entityManager,
-                                private PasswordChecker $passwordChecker,
-                                private JWTTokenManagerInterface $JWTManager,
-                                private KernelInterface $kernel) {}
+        private UserPasswordHasherInterface $encoder,
+        private EntityManagerInterface $entityManager,
+        private PasswordChecker $passwordChecker,
+        private JWTTokenManagerInterface $JWTManager,
+        private KernelInterface $kernel)
+    {
+    }
 
     public function checkValues($values)
     {
         $values = htmlspecialchars($values);
         $values = trim($values);
         $values = stripslashes($values);
+
         return $values;
     }
 
@@ -35,8 +38,8 @@ class RegistrationService
         $user->setLastName($this->checkValues($lastName));
         $user->setPassword($this->encoder->hashPassword($user, $password));
         $user->setStatut($this->checkValues($statut));
-        $user->setSiren((strlen($siren) === 9) ? $siren : null);
-        $user->setSiret(strlen($siret) === 14 ? $siret : null);
+        $user->setSiren((9 === strlen($siren)) ? $siren : null);
+        $user->setSiret(14 === strlen($siret) ? $siret : null);
         $user->setNumRcs(strlen($num_rcs) > 0 ? $num_rcs : null);
         $user->setCapitalSocial(strlen($capital_social) > 0 ? $capital_social : null);
         $user->setCreatedAt(new \DateTimeImmutable());
@@ -48,15 +51,11 @@ class RegistrationService
         $this->entityManager->persist($user);
         $this->entityManager->flush();
         $id = $user->getId();
-        //create a new token for the user with the user id and email
+        // create a new token for the user with the user id and email
         $token = $this->JWTManager->create($user);
-        
 
-
-
-        return new JsonResponse(['success' => 'Registration successful!','user_id' => $id,'email' => $user->getEmail(),'firstname'=> $user->getFirstname(), 'token' => $token], 201);
+        return new JsonResponse(['success' => 'Registration successful!', 'user_id' => $id, 'email' => $user->getEmail(), 'firstname' => $user->getFirstname(), 'token' => $token], 201);
     }
-
 
     public function validateRegistrationData(array $data): ?JsonResponse
     {
@@ -65,48 +64,34 @@ class RegistrationService
 
         if ($emailExist) {
             return new JsonResponse(['error' => 'Email already exist.'], 400);
-        }
-        else if (empty($data['email']) || empty($data['password']) || empty($data['confirmPassword']) || empty($data['firstName']) || empty($data['lastName']) || empty($data['statut'])) {
+        } elseif (empty($data['email']) || empty($data['password']) || empty($data['confirmPassword']) || empty($data['firstName']) || empty($data['lastName']) || empty($data['statut'])) {
             return new JsonResponse(['error' => 'All fields are required.'], 400);
-        }
-        else if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+        } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             return new JsonResponse(['error' => 'Invalid email format.'], 400);
-        }
-        else if ($data['password'] !== $data['confirmPassword']) {
+        } elseif ($data['password'] !== $data['confirmPassword']) {
             return new JsonResponse(['error' => 'Passwords do not match.'], 400);
-        }
-        else if (strlen($data['password']) < 12) {
+        } elseif (strlen($data['password']) < 12) {
             return new JsonResponse(['error' => 'Password must be at least 12 characters long.'], 400);
-        }
-        else if (!preg_match('/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}/', $data['password'])) {
+        } elseif (!preg_match('/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}/', $data['password'])) {
             return new JsonResponse(['error' => 'Password is not secure.'], 400);
-        }
-        else if (!preg_match('/^[a-zA-Z]{2,}$/', $data['firstName']) ||!preg_match('/^[a-zA-Z]{2,}$/', $data['lastName'])) {
+        } elseif (!preg_match('/^[a-zA-Z]{2,}$/', $data['firstName']) || !preg_match('/^[a-zA-Z]{2,}$/', $data['lastName'])) {
             return new JsonResponse(['error' => 'First name and last name must contain only letters.'], 400);
-        }
-        else if (!in_array($data['statut'], ['free-lance','EI', 'SARL', 'EURL', 'SASU'] )) {
+        } elseif (!in_array($data['statut'], ['free-lance', 'EI', 'SARL', 'EURL', 'SASU'])) {
             return new JsonResponse(['error' => 'Invalid statut.'], 400);
-        }
-        else if (!empty($data['siren']) && (!is_numeric($data['siren']) || strlen($data['siren'])!== 9)) {
+        } elseif (!empty($data['siren']) && (!is_numeric($data['siren']) || 9 !== strlen($data['siren']))) {
             return new JsonResponse(['error' => 'Invalid Siren number.'], 400);
-        }
-        else if (!empty($data['siret']) && (!is_numeric($data['siret']) || strlen($data['siret'])!== 14)) {
+        } elseif (!empty($data['siret']) && (!is_numeric($data['siret']) || 14 !== strlen($data['siret']))) {
             return new JsonResponse(['error' => 'Invalid Siret number.'], 400);
-        }
-        else if (!empty($data['num_rcs']) && (!is_numeric($data['num_rcs']))) {
+        } elseif (!empty($data['num_rcs']) && (!is_numeric($data['num_rcs']))) {
             return new JsonResponse(['error' => 'Invalid num RCS.'], 400);
-
-        } else if (!empty($data['capital_social']) && (!is_numeric($data['capital_social']))) {
-            return new  JsonResponse(['error' => 'Invalid capital social.'], 400);
-        }
-        else if ($data['acceptTerms'] !== true) {
+        } elseif (!empty($data['capital_social']) && (!is_numeric($data['capital_social']))) {
+            return new JsonResponse(['error' => 'Invalid capital social.'], 400);
+        } elseif (true !== $data['acceptTerms']) {
             return new JsonResponse(['error' => 'You must accept the terms.'], 400);
-        }
-        else if ($this->passwordChecker->isPasswordBanned(($data['password'])) === 'Password is not secure') {
+        } elseif ('Password is not secure' === $this->passwordChecker->isPasswordBanned($data['password'])) {
             return new JsonResponse(['error' => 'Password is not secure.'], 400);
         }
-        
-        return null;
 
+        return null;
     }
 }

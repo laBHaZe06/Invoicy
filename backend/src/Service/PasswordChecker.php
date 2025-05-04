@@ -22,6 +22,7 @@ class PasswordChecker
         }
 
         $bannedPasswords = $cacheItem->get();
+
         return isset($bannedPasswords[$password]);
     }
 }

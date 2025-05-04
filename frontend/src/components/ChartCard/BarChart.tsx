@@ -1,29 +1,29 @@
 "use client";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
-import { Invoice } from "@/components/Modal/InvoiceEditModal"; // Importer le type de facture
+import { Invoices } from "@/type/Invoices";
 
 // Enregistrer les composants nécessaires de Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface BarChartProps {
-  invoices: Invoice[];
+  invoices: Invoices[];
 }
 
 export default function BarChart({ invoices }: BarChartProps) {
   // Traitement des données pour le graphique
-  const labels = invoices.map((invoice) => invoice.client);
-  const data = invoices.map((invoice) => invoice.amount);
+  const labels = invoices.map((invoice) => invoice.client?.lastName || "Inconnu");
+  const data = invoices.map((invoice) => invoice.amountTtc);
   const backgroundColor = invoices.map((invoice) => {
-    if (invoice.status === "non payée" ) {
+    if (invoice.statut === "non payée" ) {
       return "rgba(255, 99, 132, 0.6)"; 
-    } else if (invoice.status === "en attente") {
+    } else if (invoice.statut === "en attente") {
       return "rgba(253, 160, 106, 0.62)";
     }else {
       return "rgba(81, 207, 165, 0.6)";
     }
   });
-
+  
   const options = {
     scales: {
       y: {
@@ -41,7 +41,6 @@ export default function BarChart({ invoices }: BarChartProps) {
       },
     },
   };
-
   const dataForChart = {
     labels,
     datasets: [

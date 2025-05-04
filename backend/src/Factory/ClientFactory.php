@@ -2,7 +2,7 @@
 
 namespace App\Factory;
 
-use App\Entity\Clients;
+use App\Dto\Client\ClientDto;
 
 class ClientFactory
 {
@@ -11,15 +11,41 @@ class ClientFactory
         string $lastname,
         string $companyName,
         string $email,
-        string $phone
-    ): Clients {
-        $client = new Clients();
-        $client->setFirstname($firstname)
-               ->setLastname($lastname)
-               ->setCompanyName($companyName)
-               ->setEmail($email)
-               ->setPhone($phone);
+        string $phone,
+        string $country,
+        string $town,
+    ): ClientDto {
+        return new ClientDto(
+            0, // Assuming ID is auto-generated
+            $firstname,
+            $lastname,
+            $companyName,
+            $email,
+            $phone,
+            $country,
+            $town
+        );
+    }
 
-        return $client;
+    public function update(
+        int $id,
+        string $firstname,
+        string $lastname,
+        string $companyName,
+        string $email,
+        string $phone,
+        string $country,
+        string $town,
+    ): ClientDto {
+        return new ClientDto(
+            $id,
+            $firstname,
+            $lastname,
+            $companyName,
+            $email,
+            $phone,
+            $country,
+            $town
+        );
     }
 }

@@ -23,19 +23,9 @@ import {
 import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import InvoiceEditModal, { Invoice } from "@/components/Modal/InvoiceEditModal";
+import InvoiceEditModal from "@/components/Modal/InvoiceEditModal";
 import InvoiceShowModal from "@/components/Modal/InvoiceShowModal";
-
-// Données simulées
-const fakeInvoices: Invoice[] = [
-  { id: 1, client: "Jean Dupont", amount: 320, status: "payée" },
-  { id: 2, client: "Emma Durand", amount: 120, status: "en attente" },
-  { id: 3, client: "Paul Morel", amount: 380, status: "non payée" },
-  { id: 4, client: "Claire Martin", amount: 300, status: "rappel envoyé" },
-  { id: 5, client: "Luc Lefevre", amount: 210, status: "en attente" },
-  { id: 6, client: "Sophie Leroy", amount: 150, status: "facture prête" },
-];
-
+import { Invoices } from '@/type/Invoices';
 const statusColors: Record<string, "success" | "warning" | "error" | "info" | "primary"> = {
   payée: "success",
   "non payée": "error",
@@ -56,47 +46,74 @@ const statusTabs = [
 export default function FacturesPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoices | null>(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [invoices, setInvoices] = useState<Invoices[]>([]);
 
-  const handleEditClick = (facture: Invoice) => {
-    setSelectedInvoice(facture);
+  const handleEditClick = (invoice: Invoices) => {
+    setSelectedInvoice(invoice);
     setEditModalOpen(true);
   };
 
-  const handleSaveInvoice = (updated: Invoice) => {
-    const index = fakeInvoices.findIndex((f) => f.id === updated.id);
-    if (index !== -1) {
-      fakeInvoices[index] = updated;
-    }
+  const handleSaveInvoice = (updated: Invoices) => {
+    const updatedInvoices = invoices.map((invoices : Invoices) =>
+      invoices.id === updated.id ? updated : invoices
+    );
+    setInvoices(updatedInvoices);
   };
 
-  const handleSendInvoice = (facture: Invoice) => {
-    const index = fakeInvoices.findIndex((f) => f.id === facture.id);
-    if (index !== -1) {
-      fakeInvoices[index].status = "en attente";
-      console.log(`Facture envoyée à ${facture.client}`);
-    }
+  const handleSendInvoice = (facture: Invoices) => {
+    const updatedInvoices = invoices.map((invoice) =>
+      invoice.id === facture.id ? { ...invoice, statut: "en attente" } : invoice
+    );
+    setInvoices(updatedInvoices);
+    console.log(`Facture envoyée à ${facture.client}`);
   };
 
-  const handleViewClick = (facture: Invoice) => {
+  const handleViewClick = (facture: Invoices) => {
     setSelectedInvoice(facture);
     setViewModalOpen(true);
   };
 
   const filteredInvoices = activeTab === 0
-    ? fakeInvoices
-    : fakeInvoices.filter((facture) => facture.status === statusTabs[activeTab]);
+    ? invoices
+    : invoices.filter((facture) => facture.statut === statusTabs[activeTab]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1500);
-    return () => clearTimeout(timer);
+    const fetchInvoices = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${process.env.API_URL}/me/invoices`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: 'include',
+        });
+        
+        console.info(response);
+        if (!response.ok) throw new Error("Erreur lors de la récupération des factures.");
+    
+        const data = await response.json();
+        const allInvoices: Invoices[] = data || []; 
+        console.info(allInvoices);
+        
+        setInvoices(allInvoices);
+      } catch (error) {
+        console.error(error);
+        setInvoices([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInvoices();
   }, []);
 
   return (
     <>
-      <Box sx={{ height: '100vh' }}>
+      <Box sx={{ height: "100vh" }}>
         <Typography variant="h5" sx={{ mb: 2, color: "text.secondary" }}>
           Gestion des Factures
         </Typography>
@@ -121,10 +138,9 @@ export default function FacturesPage() {
           </CardContent>
         </Card>
 
-        <Card sx={{ borderRadius: 2, height: '600px' }}>
+        <Card sx={{ borderRadius: 2, height: "600px" }}>
           <CardContent>
             {loading ? (
-              // Affichage de Skeletons pendant le chargement
               <Table>
                 <TableHead>
                   <TableRow>
@@ -158,14 +174,14 @@ export default function FacturesPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredInvoices.map((facture) => (
-                    <TableRow key={facture.id}>
-                      <TableCell sx={{ color: "black" }}>{facture.client}</TableCell>
-                      <TableCell sx={{ color: "black" }}>{facture.amount} €</TableCell>
+                  {filteredInvoices.map((facture, index) => (
+                    <TableRow key={index}>
+                      <TableCell sx={{ color: "black" }}>{facture.client.firstName} - {facture.client.lastName}</TableCell>
+                      <TableCell sx={{ color: "black" }}>{facture.amountHt} €</TableCell>
                       <TableCell>
                         <Chip
-                          label={facture.status}
-                          color={statusColors[facture.status]}
+                          label={facture.statut}
+                          color={statusColors[facture.statut]}
                           variant="outlined"
                         />
                       </TableCell>
@@ -180,7 +196,7 @@ export default function FacturesPage() {
                           >
                             Voir
                           </Button>
-                          {(facture.status === "en attente" || facture.status === "facture prête") && (
+                          {(facture.statut === "en attente" || facture.statut === "facture prête") && (
                             <Button
                               size="small"
                               variant="contained"
@@ -191,7 +207,7 @@ export default function FacturesPage() {
                               Modifier
                             </Button>
                           )}
-                          {facture.status === "facture prête" && (
+                          {facture.statut === "facture prête" && (
                             <Button
                               size="small"
                               variant="contained"
@@ -218,9 +234,9 @@ export default function FacturesPage() {
         <DialogContent sx={{ color: "black" }}>
           {selectedInvoice && (
             <>
-              <Typography variant="h6">Client: {selectedInvoice.client}</Typography>
-              <Typography variant="body1">Montant: {selectedInvoice.amount} €</Typography>
-              <Typography variant="body1">Statut: {selectedInvoice.status}</Typography>
+              <Typography variant="h6">Client: {selectedInvoice.client.firstName} - {selectedInvoice.client.lastName}</Typography>
+              <Typography variant="body1">Montant: {selectedInvoice.amountTtc} €</Typography>
+              <Typography variant="body1">Statut: {selectedInvoice.statut}</Typography>
               <Typography variant="body1">ID de la Facture: {selectedInvoice.id}</Typography>
             </>
           )}
@@ -235,12 +251,12 @@ export default function FacturesPage() {
       <InvoiceShowModal
         open={viewModalOpen}
         onClose={() => setViewModalOpen(false)}
-        invoice={selectedInvoice}
+        invoices={selectedInvoice}
       />
       <InvoiceEditModal
         open={editModalOpen}
         onClose={() => setEditModalOpen(false)}
-        invoice={selectedInvoice}
+        invoices={selectedInvoice}
         onSave={handleSaveInvoice}
       />
     </>
