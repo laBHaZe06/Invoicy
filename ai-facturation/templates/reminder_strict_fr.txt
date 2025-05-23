@@ -1,0 +1,8 @@
+Bonjour {{ name }},
+
+Malgré nos précédents rappels, votre facture échue le {{ due_date }} reste impayée.
+
+Nous vous prions de régulariser cette situation immédiatement.
+
+Cordialement,
+Service Comptabilité
