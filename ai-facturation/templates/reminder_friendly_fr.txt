@@ -1,0 +1,7 @@
+Bonjour {{ name }},
+
+Nous espérons que vous allez bien. Nous avons constaté que votre facture échue le {{ due_date }} n'est pas réglée.
+Pourriez‑vous la payer dès que possible ?
+
+Merci !
+Équipe facturation
