@@ -1,0 +1,7 @@
+Hello {{ name }},
+
+Despite previous notices, your invoice due on {{ due_date }} remains unpaid.
+Immediate settlement is required to avoid service interruption.
+
+Regards,
+Billing team
