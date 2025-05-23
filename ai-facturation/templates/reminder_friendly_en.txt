@@ -1,0 +1,7 @@
+Hello {{ name }},
+
+We hope you are well. We noticed invoice due on {{ due_date }} is still open.
+Could you please take a moment to settle it?
+
+Thank you!
+Billing team
