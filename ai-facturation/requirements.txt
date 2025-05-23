@@ -3,3 +3,5 @@ python-dotenv
 jinja2
 smtplib
 email-validator
+pandas
+scikit-learn
